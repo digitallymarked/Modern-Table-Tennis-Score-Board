@@ -39,7 +39,7 @@ interface BigScoreBoardProps {
     showsColorTheme?: boolean
 }
 
-function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: BigScoreBoardProps) {
+function BigScoreBoard({ showTitle: _showTitle = true, uid = "", showsColorTheme = true }: BigScoreBoardProps) {
 
     const {
         seconds,
