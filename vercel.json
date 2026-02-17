@@ -1,3 +1,16 @@
 {
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+  "rewrites": [
+    {
+      "source": "/ttscore",
+      "destination": "/ttscore/index.html"
+    },
+    {
+      "source": "/ttscore/",
+      "destination": "/ttscore/index.html"
+    },
+    {
+      "source": "/ttscore/((?!assets/).*)",
+      "destination": "/ttscore/index.html"
+    }
+  ]
 }
