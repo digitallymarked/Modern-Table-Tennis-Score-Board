@@ -11,7 +11,6 @@ import Layout from "./components/common/Layout";
 
 const BigScoreOnePages = lazy(() => import('./pages/BigScoreOnePages'));
 const BigScoreMultiPages = lazy(() => import('./pages/BigScoreMultiPages'));
-const RoadMap = lazy(() => import('./pages/RoadMap'));
 
 const router = createBrowserRouter([
     {
@@ -25,18 +24,6 @@ const router = createBrowserRouter([
             {
                 path: "/multi",
                 element: <BigScoreMultiPages />,
-            },
-            {
-                path: "/roadmap",
-                element: <RoadMap lang="en" />,
-            },
-            {
-                path: "/roadmap/en",
-                element: <RoadMap lang="en" />,
-            },
-            {
-                path: "/roadmap/ch",
-                element: <RoadMap lang="ch" />,
             },
         ]
     }

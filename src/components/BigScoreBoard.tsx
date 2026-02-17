@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
-import { Container, Grid, Text, Badge, Radio, Group, Space, ActionIcon, Tooltip, Menu, rem, Box, TextInput } from "@mantine/core"
+import { useEffect, useRef, useState } from "react";
+import confetti from "canvas-confetti";
+import { Container, Grid, Text, Badge, Radio, Group, Space, ActionIcon, Tooltip, Menu, rem, TextInput, Stack, Box } from "@mantine/core"
 import ScoreDrag from "./ScoreDrag"
 import { EmblaCarouselType } from "embla-carousel";
 import { useLocalStorage } from '@mantine/hooks';
 import { useStopwatch } from 'react-timer-hook';
 
-import { IconArrowsExchange, IconArrowsExchange2, IconBounceLeft, IconBounceRight, IconCategory, IconPingPong, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerTrackNextFilled, IconRepeat, IconServerCog, IconShare, IconSwords, IconZoomReset } from "@tabler/icons-react";
+import { IconArrowsExchange, IconArrowsExchange2, IconBounceLeft, IconBounceRight, IconCategory, IconChevronDown, IconChevronUp, IconEye, IconEyeOff, IconMaximize, IconMinimize, IconPingPong, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerTrackNextFilled, IconRepeat, IconServerCog, IconShare, IconSwords, IconZoomReset } from "@tabler/icons-react";
 import { determineWhoServe, determineWhoWin } from "../utils/tableTennisUtils";
 import { ScoreObject } from "../interface/tableTennisInterface";
 import ColorToggleBtn from "./common/ColorToggleBtn";
 import superjson from 'superjson';
 import toast from "react-hot-toast";
-// import OverallTimer from "./OverallTimer";
 import { useNavigate } from "react-router-dom";
-import GotoRoadMap from "./common/GotoRoadMap";
+import { AnimatePresence, motion } from "motion/react";
+// import OverallTimer from "./OverallTimer";
 
 const playersScoreDefaultValue = {
     leftPlayerScore: 0,
@@ -25,16 +26,20 @@ const playersScoreDefaultValue = {
     whoServeFirst: "left" as "left" | "right",
 
     freeText: "",
+    leftPlayerName: "",
+    rightPlayerName: "",
 }
+
+const LEFT_CARD_BG = "oklch(88.5% 0.062 18.334)";
+const RIGHT_CARD_BG = "oklch(88.2% 0.059 254.128)";
 
 interface BigScoreBoardProps {
     showTitle?: boolean,
-    showRoadmap?: boolean,
     uid?: string
     showsColorTheme?: boolean
 }
 
-function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsColorTheme = true }: BigScoreBoardProps) {
+function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: BigScoreBoardProps) {
 
     const {
         seconds,
@@ -65,16 +70,41 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
 
     const [isCurrentFirstPlayerServe, setIsCurrentFirstPlayerServe] = useState<boolean>(true);
 
-    function changeText(freeText: string) {
-        setPlayersScore(v => {
-            const newPlayer: ScoreObject = {
-                ...v,
-            }
+    const [showTimer, setShowTimer] = useLocalStorage({ key: 'score-board-show-timer', defaultValue: true });
+    const previousWinnerRef = useRef<string>("");
 
-            newPlayer["freeText"] = freeText;
+    const [isShaking, setIsShaking] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
+    const [nameSwapKey, setNameSwapKey] = useState(0);
 
-            return newPlayer
-        });
+    useEffect(() => {
+        const handler = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener("fullscreenchange", handler);
+        return () => document.removeEventListener("fullscreenchange", handler);
+    }, []);
+
+    const nameSwapDuration = 0.3;
+    const nameSwapTransition = { duration: nameSwapDuration, ease: [0.4, 0, 0.2, 1] as const };
+
+    function toggleFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => toast.error("Could not exit fullscreen"));
+        } else {
+            document.documentElement.requestFullscreen().catch(() => toast.error("Could not enter fullscreen"));
+        }
+    }
+
+    function fireConfetti() {
+        setIsShaking(true);
+        setTimeout(() => setIsShaking(false), 500);
+
+        const defaults = { zIndex: 1000, origin: { y: 0.6, x: 0.5 } };
+        confetti({ ...defaults, particleCount: 80, spread: 70, startVelocity: 45 });
+        confetti({ ...defaults, particleCount: 50, spread: 100, startVelocity: 35, decay: 0.92, scalar: 0.9 });
+        setTimeout(() => {
+            confetti({ ...defaults, particleCount: 80, spread: 70, startVelocity: 45 });
+            confetti({ ...defaults, particleCount: 50, spread: 100, startVelocity: 35, decay: 0.92, scalar: 0.9 });
+        }, 400);
     }
 
     function changeScore(score: number, player: keyof ScoreObject) {
@@ -111,6 +141,23 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
         emblaRightMatchScore?.scrollTo(newRightMatchScore, false);
     }
 
+    const MAX_SCORE = 49; // 0-indexed, 50 slides (0..49)
+
+    function adjustScore(player: "leftPlayerScore" | "rightPlayerScore" | "leftPlayerMatchScore" | "rightPlayerMatchScore", delta: number) {
+        if (!playersScore) return;
+        const current = playersScore[player];
+        const next = Math.max(0, Math.min(MAX_SCORE, current + delta));
+        if (next === current) return;
+        setPlayersScore(v => ({ ...v, [player]: next }));
+        const emblaMap = {
+            leftPlayerScore: emblaLeftScore,
+            rightPlayerScore: emblaRightScore,
+            leftPlayerMatchScore: emblaLeftMatchScore,
+            rightPlayerMatchScore: emblaRightMatchScore,
+        };
+        emblaMap[player]?.scrollTo(next, false);
+    }
+
     function resetMatchScore() {
         setPlayersScore(v => ({
             ...v,
@@ -134,14 +181,15 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
     }
 
     function resetAllScore() {
-        setPlayersScore({
+        setPlayersScore(v => ({
+            ...v,
             leftPlayerScore: 0,
             rightPlayerScore: 0,
             leftPlayerMatchScore: 0,
             rightPlayerMatchScore: 0,
             whoServeFirst: "left",
             freeText: ""
-        });
+        }));
 
         toast.success('All score has been resetted');
         initScoreScreen(0, 0)
@@ -150,8 +198,6 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
 
     function nextMatctStart() {
         const whoWin = determineWhoWin(playersScore!["leftPlayerScore"], playersScore!["rightPlayerScore"]);
-
-        // swap match score
         const newLeftMatchScore = playersScore!["rightPlayerMatchScore"] + (whoWin === "Right Win >" ? 1 : 0);
         const newRightMatchScore = playersScore!["leftPlayerMatchScore"] + (whoWin === "< Left Win" ? 1 : 0);
 
@@ -161,13 +207,15 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
             rightPlayerScore: 0,
             leftPlayerMatchScore: newLeftMatchScore,
             rightPlayerMatchScore: newRightMatchScore,
-            whoServeFirst: v.whoServeFirst === "right" ? "left" : "right"
+            whoServeFirst: v.whoServeFirst === "right" ? "left" : "right",
+            leftPlayerName: v.rightPlayerName ?? "",
+            rightPlayerName: v.leftPlayerName ?? "",
         }));
-
         toast.success('Next match!');
-        reset(); // timer reset
+        reset();
         initMatchScoreScreen(newLeftMatchScore, newRightMatchScore);
         initScoreScreen(0, 0);
+        setNameSwapKey((k) => k + 1);
     }
 
     function swapMatchScore() {
@@ -206,28 +254,39 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
         const whoWon = determineWhoWin(
             playersScore!["leftPlayerScore"],
             playersScore!["rightPlayerScore"]
-        )
+        );
 
         if (whoWon !== "") {
-            pause()
+            pause();
+            if (previousWinnerRef.current === "") {
+                previousWinnerRef.current = whoWon;
+                fireConfetti();
+            }
+        } else {
+            previousWinnerRef.current = "";
+            if (!isRunning) start();
         }
-        else if (whoWon === "" && !isRunning) {
-            start()
-        }
-
     }, [playersScore]);
 
     return (
         <>
+            <style>{`
+                @keyframes winShake {
+                    0%, 100% { transform: translate(0, 0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translate(-5px, -3px); }
+                    20%, 40%, 60%, 80% { transform: translate(5px, 3px); }
+                }
+            `}</style>
+            <Box style={{ animation: isShaking ? 'winShake 0.5s ease-in-out' : undefined, minHeight: '100vh' }}>
             <Container fluid>
 
-                <Group justify="space-between" mt={12}>
-
-                    <Box>
-                        {showRoadmap && <GotoRoadMap />}
-                    </Box>
-
+                <Group justify="flex-end" mt={12}>
                     <Group>
+                        <Tooltip label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
+                            <ActionIcon variant="light" aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={toggleFullscreen}>
+                                {isFullscreen ? <IconMinimize style={{ width: '70%', height: '70%' }} stroke={1.5} /> : <IconMaximize style={{ width: '70%', height: '70%' }} stroke={1.5} />}
+                            </ActionIcon>
+                        </Tooltip>
                         <Menu shadow="md" width={200}>
                             <Menu.Target>
                                 <Tooltip label="Menu">
@@ -316,6 +375,16 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                                     Reset Timer
                                 </Menu.Item>
 
+                                <Menu.Item
+                                    leftSection={showTimer ? <IconEyeOff style={{ width: rem(14), height: rem(14) }} /> : <IconEye style={{ width: rem(14), height: rem(14) }} />}
+                                    onClick={() => {
+                                        setShowTimer((v) => !v);
+                                        toast.success(showTimer ? "Timer hidden" : "Timer shown");
+                                    }}
+                                >
+                                    {showTimer ? "Hide Timer" : "Show Timer"}
+                                </Menu.Item>
+
                                 <Menu.Label>
                                     Mode
                                 </Menu.Label>
@@ -347,8 +416,7 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                                     leftSection={<IconShare style={{ width: rem(14), height: rem(14) }} />}
                                     onClick={async () => {
                                         await navigator.share({
-                                            title: `TT Match Result ${playersScore.freeText ? "[" + playersScore.freeText + "]" : ""}` +
-                                                `(Match: ${playersScore.leftPlayerMatchScore} - ${playersScore.rightPlayerMatchScore}) ` +
+                                            title: `TT Match Result (Match: ${playersScore.leftPlayerMatchScore} - ${playersScore.rightPlayerMatchScore}) ` +
                                                 `(Score: ${playersScore.leftPlayerScore} - ${playersScore.rightPlayerScore}) `,
                                             text: "*Match Result*\n" +
                                                 `${playersScore.leftPlayerMatchScore} - ${playersScore.rightPlayerMatchScore}\n` +
@@ -367,18 +435,6 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                     </Group>
                 </Group>
 
-                {showTitle && (
-                    <>
-                        <Text ta="center" fz={48} fw={300} mt={6}>
-                            TT Score Board
-                        </Text>
-                        <Text ta="center" fz={14} fw={300} c="dimmed" mt={-8}>
-                            Modern table Tennis Score Board
-                        </Text>
-                    </>
-                )}
-
-
                 <Group justify="center" mt={16}>
                     <Tooltip label="Start Next Match">
                         <ActionIcon
@@ -392,14 +448,6 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                     </Tooltip>
                 </Group>
 
-                <Group justify="center" mt={12}>
-                    <TextInput
-                        placeholder="Free Text"
-                        value={playersScore.freeText || ""}
-                        onChange={(event) => changeText(event.currentTarget.value)}
-                    />
-                </Group>
-
                 <Radio.Group
                     mt={16}
                     value={playersScore!.whoServeFirst}
@@ -409,25 +457,146 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                     })}
                     withAsterisk
                 >
-                    <Group justify="space-between">
-                        <Radio value="left" label={<><IconPingPong size={18} /> First Serve </>} />
-                        <Radio value="right" label={<><IconPingPong size={18} /> First Serve </>} />
-                    </Group>
+                    <Grid gutter="sm">
+                        <Grid.Col span={{ base: 12, sm: 6 }}>
+                            <Stack gap="xs">
+                                <Radio value="left" label={<><IconPingPong size={18} /> First Serve </>} />
+                                <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
+                                    <AnimatePresence initial={false}>
+                                        <motion.div
+                                            key={`left-${nameSwapKey}`}
+                                            initial={{ y: -20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            exit={{ y: 20, opacity: 0 }}
+                                            transition={nameSwapTransition}
+                                            style={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                boxSizing: 'border-box',
+                                            }}
+                                        >
+                                            <TextInput
+                                                placeholder="Left player"
+                                                variant="unstyled"
+                                                value={playersScore?.leftPlayerName ?? ""}
+                                                onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, leftPlayerName: e.currentTarget.value })}
+                                                size="xl"
+                                                styles={{
+                                                    root: { width: '100%' },
+                                                    input: {
+                                                        fontSize: rem(60),
+                                                        minHeight: rem(112),
+                                                        border: 'none',
+                                                        outline: 'none',
+                                                        boxShadow: 'none',
+                                                        backgroundColor: 'transparent',
+                                                        paddingLeft: 0,
+                                                        paddingRight: 0,
+                                                    },
+                                                }}
+                                            />
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </Box>
+                            </Stack>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, sm: 6 }}>
+                            <Stack gap="xs" align="flex-end">
+                                <Radio value="right" label={<><IconPingPong size={18} /> First Serve </>} />
+                                <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
+                                    <AnimatePresence initial={false}>
+                                        <motion.div
+                                            key={`right-${nameSwapKey}`}
+                                            initial={{ y: -20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            exit={{ y: 20, opacity: 0 }}
+                                            transition={nameSwapTransition}
+                                            style={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end',
+                                                boxSizing: 'border-box',
+                                            }}
+                                        >
+                                            <TextInput
+                                                placeholder="Right player"
+                                                variant="unstyled"
+                                                value={playersScore?.rightPlayerName ?? ""}
+                                                onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, rightPlayerName: e.currentTarget.value })}
+                                                size="xl"
+                                                styles={{
+                                                    root: { width: '100%' },
+                                                    input: {
+                                                        fontSize: rem(60),
+                                                        minHeight: rem(112),
+                                                        border: 'none',
+                                                        outline: 'none',
+                                                        boxShadow: 'none',
+                                                        backgroundColor: 'transparent',
+                                                        paddingLeft: 0,
+                                                        paddingRight: 0,
+                                                        textAlign: 'right',
+                                                    },
+                                                }}
+                                            />
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </Box>
+                            </Stack>
+                        </Grid.Col>
+                    </Grid>
                 </Radio.Group>
 
-                <Grid mt={16}>
+                <Grid mt={16} align="flex-start">
                     <Grid.Col span={{ base: 6, md: 5, lg: 5 }} order={{ base: 2, md: 1, lg: 1 }}>
-                        <ScoreDrag
-                            initialSlide={playersScore!.leftPlayerScore}
-                            changeScore={changeScore}
-                            player={"leftPlayerScore"}
-                            setEmbla={setEmblaLeftScore}
-                        />
+                        <Stack align="center" gap="xs">
+                            <ActionIcon size="xl" variant="light" color="gray" aria-label="Increase score" onClick={() => adjustScore("leftPlayerScore", 1)}>
+                                <IconChevronUp style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                            </ActionIcon>
+                            <ScoreDrag
+                                initialSlide={playersScore!.leftPlayerScore}
+                                changeScore={changeScore}
+                                player={"leftPlayerScore"}
+                                setEmbla={setEmblaLeftScore}
+                                height={600}
+                                fontSize={18}
+                                cardBackgroundColor={LEFT_CARD_BG}
+                            />
+                            <ActionIcon size="xl" variant="light" color="gray" aria-label="Decrease score" onClick={() => adjustScore("leftPlayerScore", -1)}>
+                                <IconChevronDown style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                            </ActionIcon>
+                        </Stack>
                         {isCurrentFirstPlayerServe
                             && (
-                                <Badge color="blue" size="lg" mt={2} tt="none">
-                                    <IconBounceLeft size={12} /> Serve
-                                </Badge>
+                                <Group justify="center" mt="md">
+                                    <Badge
+                                        color="blue"
+                                        size="lg"
+                                        tt="none"
+                                        style={{
+                                            fontSize: rem(28),
+                                            padding: `${rem(10)} ${rem(20)}`,
+                                            minHeight: rem(52),
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: rem(10),
+                                            lineHeight: 1,
+                                        }}
+                                    >
+                                        <IconBounceLeft style={{ width: rem(28), height: rem(28), flexShrink: 0 }} />
+                                        Serve
+                                    </Badge>
+                                </Group>
                             )
                         }
                     </Grid.Col>
@@ -435,25 +604,43 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                     <Grid.Col span={{ base: 12, md: 2, lg: 2 }} order={{ base: 1, md: 2, lg: 2 }}>
                         <Grid>
                             <Grid.Col span={{ base: 3, md: 6, lg: 6 }} offset={{ base: 3, md: 0, lg: 0 }}>
-                                <ScoreDrag
-                                    initialSlide={playersScore!.leftPlayerMatchScore}
-                                    player={"leftPlayerMatchScore"}
-                                    changeScore={changeScore}
-                                    height={230}
-                                    fontSize={4}
-                                    setEmbla={setEmblaLeftMatchScore}
-                                />
+                                <Stack align="center" gap="xs">
+                                    <ActionIcon size="xl" variant="light" color="gray" aria-label="Increase match score" onClick={() => adjustScore("leftPlayerMatchScore", 1)}>
+                                        <IconChevronUp style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                                    </ActionIcon>
+                                    <ScoreDrag
+                                        initialSlide={playersScore!.leftPlayerMatchScore}
+                                        player={"leftPlayerMatchScore"}
+                                        changeScore={changeScore}
+                                        height={600}
+                                        fontSize={8}
+                                        setEmbla={setEmblaLeftMatchScore}
+                                        cardBackgroundColor={LEFT_CARD_BG}
+                                    />
+                                    <ActionIcon size="xl" variant="light" color="gray" aria-label="Decrease match score" onClick={() => adjustScore("leftPlayerMatchScore", -1)}>
+                                        <IconChevronDown style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                                    </ActionIcon>
+                                </Stack>
                             </Grid.Col>
 
                             <Grid.Col span={{ base: 3, md: 6, lg: 6 }}>
-                                <ScoreDrag
-                                    initialSlide={playersScore!.rightPlayerMatchScore}
-                                    player={"rightPlayerMatchScore"}
-                                    changeScore={changeScore}
-                                    height={230}
-                                    fontSize={4}
-                                    setEmbla={setEmblaRightMatchScore}
-                                />
+                                <Stack align="center" gap="xs">
+                                    <ActionIcon size="xl" variant="light" color="gray" aria-label="Increase match score" onClick={() => adjustScore("rightPlayerMatchScore", 1)}>
+                                        <IconChevronUp style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                                    </ActionIcon>
+                                    <ScoreDrag
+                                        initialSlide={playersScore!.rightPlayerMatchScore}
+                                        player={"rightPlayerMatchScore"}
+                                        changeScore={changeScore}
+                                        height={600}
+                                        fontSize={8}
+                                        setEmbla={setEmblaRightMatchScore}
+                                        cardBackgroundColor={RIGHT_CARD_BG}
+                                    />
+                                    <ActionIcon size="xl" variant="light" color="gray" aria-label="Decrease match score" onClick={() => adjustScore("rightPlayerMatchScore", -1)}>
+                                        <IconChevronDown style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                                    </ActionIcon>
+                                </Stack>
                             </Grid.Col>
 
                         </Grid>
@@ -464,9 +651,11 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                             && (<Text ta="center" fz={32} fw={300}> <IconSwords /> Deuce </Text>)
                         }
 
-                        <Text ta="center" fz={22} c="dimmed" mt={2}>
-                            {minutes >= 10 ? minutes : "0" + minutes}:{seconds >= 10 ? seconds : "0" + seconds}
-                        </Text>
+                        {showTimer && (
+                            <Text ta="center" fz={22} c="dimmed" mt={2}>
+                                {minutes >= 10 ? minutes : "0" + minutes}:{seconds >= 10 ? seconds : "0" + seconds}
+                            </Text>
+                        )}
 
                         <Text ta="center" fz={32} fw={400}>
                             {determineWhoWin(playersScore!["leftPlayerScore"], playersScore!["rightPlayerScore"])}
@@ -475,17 +664,42 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
                     </Grid.Col>
 
                     <Grid.Col span={{ base: 6, md: 5, lg: 5 }} order={{ base: 3, md: 3, lg: 3 }}>
-                        <ScoreDrag
-                            initialSlide={playersScore!.rightPlayerScore}
-                            changeScore={changeScore}
-                            player={"rightPlayerScore"}
-                            setEmbla={setEmblaRightScore}
-                        />
+                        <Stack align="center" gap="xs">
+                            <ActionIcon size="xl" variant="light" color="gray" aria-label="Increase score" onClick={() => adjustScore("rightPlayerScore", 1)}>
+                                <IconChevronUp style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                            </ActionIcon>
+                            <ScoreDrag
+                                initialSlide={playersScore!.rightPlayerScore}
+                                changeScore={changeScore}
+                                player={"rightPlayerScore"}
+                                setEmbla={setEmblaRightScore}
+                                height={600}
+                                fontSize={18}
+                                cardBackgroundColor={RIGHT_CARD_BG}
+                            />
+                            <ActionIcon size="xl" variant="light" color="gray" aria-label="Decrease score" onClick={() => adjustScore("rightPlayerScore", -1)}>
+                                <IconChevronDown style={{ width: rem(24), height: rem(24) }} stroke={2} />
+                            </ActionIcon>
+                        </Stack>
                         {!isCurrentFirstPlayerServe
                             && (
-                                <Group justify="flex-end">
-                                    <Badge color="blue" size="lg" mt={2} tt="none">
-                                        <IconBounceRight size={12} /> Serve
+                                <Group justify="center" mt="md">
+                                    <Badge
+                                        color="blue"
+                                        size="lg"
+                                        tt="none"
+                                        style={{
+                                            fontSize: rem(28),
+                                            padding: `${rem(10)} ${rem(20)}`,
+                                            minHeight: rem(52),
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: rem(10),
+                                            lineHeight: 1,
+                                        }}
+                                    >
+                                        <IconBounceRight style={{ width: rem(28), height: rem(28), flexShrink: 0 }} />
+                                        Serve
                                     </Badge>
                                 </Group>
                             )
@@ -495,6 +709,7 @@ function BigScoreBoard({ showTitle = true, showRoadmap = true, uid = "", showsCo
             </Container>
 
             <Space h="md" />
+            </Box>
         </>
     )
 }

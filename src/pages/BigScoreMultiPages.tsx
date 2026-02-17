@@ -19,7 +19,6 @@ function BigScoreMultiPages() {
                                 <BigScoreBoard
                                     showTitle={false}
                                     showsColorTheme={false}
-                                    showRoadmap={false}
                                     uid={v}
                                 />
                             </Card>

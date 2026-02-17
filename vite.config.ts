@@ -18,10 +18,7 @@ export default defineConfig(({ command }) => {
 
         const dynamicRoutes = [
             "/",
-            "/multi",
-            "/roadmap",
-            "/roadmap/en",
-            "/roadmap/ch"
+            "/multi"
         ]
         
         return {

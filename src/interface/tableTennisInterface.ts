@@ -4,5 +4,7 @@ export type ScoreObject = {
     rightPlayerScore: number,
     rightPlayerMatchScore: number,
     whoServeFirst: "left" | "right",
-    freeText: string
+    freeText: string,
+    leftPlayerName?: string,
+    rightPlayerName?: string
 }
