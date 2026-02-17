@@ -12,22 +12,28 @@ import Layout from "./components/common/Layout";
 const BigScoreOnePages = lazy(() => import('./pages/BigScoreOnePages'));
 const BigScoreMultiPages = lazy(() => import('./pages/BigScoreMultiPages'));
 
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Layout />,
-        children: [
-            {
-                path: "/",
-                element: <BigScoreOnePages />,
-            },
-            {
-                path: "/multi",
-                element: <BigScoreMultiPages />,
-            },
-        ]
-    }
-]);
+// Must match Vite base (e.g. /ttscore/ for digitallymarked.com/ttscore)
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+
+const router = createBrowserRouter(
+    [
+        {
+            path: "/",
+            element: <Layout />,
+            children: [
+                {
+                    path: "/",
+                    element: <BigScoreOnePages />,
+                },
+                {
+                    path: "/multi",
+                    element: <BigScoreMultiPages />,
+                },
+            ],
+        },
+    ],
+    { basename }
+);
 
 function App() {
     return (

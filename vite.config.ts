@@ -3,9 +3,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 import react from '@vitejs/plugin-react'
 import Sitemap from 'vite-plugin-sitemap'
 
+// Deploy at digitallymarked.com/ttscore – change to '/' if using a subdomain (e.g. ttscore.digitallymarked.com)
+const base = '/ttscore/';
+
 export default defineConfig(({ command }) => {
     if (command === 'serve') { // dev
         return {
+            base,
             plugins: [
                 react()
             ],
@@ -22,27 +26,29 @@ export default defineConfig(({ command }) => {
         ]
         
         return {
+            base,
             plugins: [
-                Sitemap({ hostname: 'https://modern-table-tennis-score-board.vercel.app/', dynamicRoutes }),
+                Sitemap({ hostname: 'https://digitallymarked.com', dynamicRoutes: dynamicRoutes.map(p => base.replace(/\/$/, '') + p) }),
                 react(),
                 VitePWA({
                     registerType: 'autoUpdate',
-                    includeAssets: ['ping-pong.svg'],
+                    includeAssets: ['favicon.ico'],
                     manifest: {
                         name: 'Modern Table Tennis Score Board',
                         short_name: 'TT Score Board',
                         description: 'Nice Modern Table Tennis Score Board',
                         theme_color: '#ffffff',
+                        start_url: base,
                         icons: [
                         {
-                            src: 'ping-pong.svg',
+                            src: `${base}favicon.ico`,
                             sizes: '192x192',
-                            type: 'image/svg'
+                            type: 'image/x-icon'
                         },
                         {
-                            src: 'ping-pong.scg',
+                            src: `${base}favicon.ico`,
                             sizes: '512x512',
-                            type: 'image/svg'
+                            type: 'image/x-icon'
                         }
                         ]
                     }
