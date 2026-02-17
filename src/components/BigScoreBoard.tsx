@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
-import { Container, Grid, Text, Badge, Radio, Group, Space, ActionIcon, Tooltip, Menu, rem, TextInput, Stack, Box } from "@mantine/core"
+import { Container, Grid, Text, Badge, Radio, Group, Space, ActionIcon, Tooltip, Menu, rem, TextInput, Stack, Box, Switch } from "@mantine/core"
 import ScoreDrag from "./ScoreDrag"
 import { EmblaCarouselType } from "embla-carousel";
 import { useLocalStorage } from '@mantine/hooks';
@@ -71,11 +71,12 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
     const [isCurrentFirstPlayerServe, setIsCurrentFirstPlayerServe] = useState<boolean>(true);
 
     const [showTimer, setShowTimer] = useLocalStorage({ key: 'score-board-show-timer', defaultValue: true });
+    const [swapOnNextMatch, setSwapOnNextMatch] = useLocalStorage({ key: 'score-board-swap-on-next-match', defaultValue: true });
+    const [nameSwapKey, setNameSwapKey] = useState(0);
     const previousWinnerRef = useRef<string>("");
 
     const [isShaking, setIsShaking] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
-    const [nameSwapKey, setNameSwapKey] = useState(0);
 
     useEffect(() => {
         const handler = () => setIsFullscreen(!!document.fullscreenElement);
@@ -101,10 +102,6 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
         const defaults = { zIndex: 1000, origin: { y: 0.6, x: 0.5 } };
         confetti({ ...defaults, particleCount: 80, spread: 70, startVelocity: 45 });
         confetti({ ...defaults, particleCount: 50, spread: 100, startVelocity: 35, decay: 0.92, scalar: 0.9 });
-        setTimeout(() => {
-            confetti({ ...defaults, particleCount: 80, spread: 70, startVelocity: 45 });
-            confetti({ ...defaults, particleCount: 50, spread: 100, startVelocity: 35, decay: 0.92, scalar: 0.9 });
-        }, 400);
     }
 
     function changeScore(score: number, player: keyof ScoreObject) {
@@ -198,8 +195,12 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
 
     function nextMatctStart() {
         const whoWin = determineWhoWin(playersScore!["leftPlayerScore"], playersScore!["rightPlayerScore"]);
-        const newLeftMatchScore = playersScore!["rightPlayerMatchScore"] + (whoWin === "Right Win >" ? 1 : 0);
-        const newRightMatchScore = playersScore!["leftPlayerMatchScore"] + (whoWin === "< Left Win" ? 1 : 0);
+        const newLeftMatchScore = swapOnNextMatch
+            ? playersScore!["rightPlayerMatchScore"] + (whoWin === "Right Win >" ? 1 : 0)
+            : playersScore!["leftPlayerMatchScore"] + (whoWin === "< Left Win" ? 1 : 0);
+        const newRightMatchScore = swapOnNextMatch
+            ? playersScore!["leftPlayerMatchScore"] + (whoWin === "< Left Win" ? 1 : 0)
+            : playersScore!["rightPlayerMatchScore"] + (whoWin === "Right Win >" ? 1 : 0);
 
         setPlayersScore(v => ({
             ...v,
@@ -207,15 +208,16 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
             rightPlayerScore: 0,
             leftPlayerMatchScore: newLeftMatchScore,
             rightPlayerMatchScore: newRightMatchScore,
-            whoServeFirst: v.whoServeFirst === "right" ? "left" : "right",
-            leftPlayerName: v.rightPlayerName ?? "",
-            rightPlayerName: v.leftPlayerName ?? "",
+            ...(swapOnNextMatch && {
+                whoServeFirst: v.whoServeFirst === "right" ? "left" : "right",
+                leftPlayerName: v.rightPlayerName ?? "",
+                rightPlayerName: v.leftPlayerName ?? "",
+            }),
         }));
-        toast.success('Next match!');
+        if (swapOnNextMatch) setNameSwapKey((k) => k + 1);
         reset();
         initMatchScoreScreen(newLeftMatchScore, newRightMatchScore);
         initScoreScreen(0, 0);
-        setNameSwapKey((k) => k + 1);
     }
 
     function swapMatchScore() {
@@ -287,7 +289,7 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
                                 {isFullscreen ? <IconMinimize style={{ width: '70%', height: '70%' }} stroke={1.5} /> : <IconMaximize style={{ width: '70%', height: '70%' }} stroke={1.5} />}
                             </ActionIcon>
                         </Tooltip>
-                        <Menu shadow="md" width={200}>
+                        <Menu shadow="md" width={320}>
                             <Menu.Target>
                                 <Tooltip label="Menu">
                                     <ActionIcon variant="light" aria-label="Menu" >
@@ -321,6 +323,28 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
                                     onClick={() => resetAllScore()}
                                 >
                                     Reset All Score
+                                </Menu.Item>
+
+                                <Menu.Label>
+                                    Next match
+                                </Menu.Label>
+
+                                <Menu.Item
+                                    leftSection={<IconPlayerTrackNextFilled style={{ width: rem(14), height: rem(14) }} />}
+                                    onClick={(e) => e.stopPropagation()}
+                                    closeMenuOnClick={false}
+                                >
+                                    <Group justify="space-between" wrap="nowrap" gap="sm">
+                                        <Text size="sm" style={{ whiteSpace: 'nowrap' }}>Swap sides on next match</Text>
+                                        <Switch
+                                            checked={swapOnNextMatch}
+                                            onChange={(e) => {
+                                                setSwapOnNextMatch(e.currentTarget.checked);
+                                                toast.success(e.currentTarget.checked ? "Swap sides on next match: on" : "Swap sides on next match: off");
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </Group>
                                 </Menu.Item>
 
                                 <Menu.Label>
@@ -461,97 +485,117 @@ function BigScoreBoard({ showTitle = true, uid = "", showsColorTheme = true }: B
                         <Grid.Col span={{ base: 12, sm: 6 }}>
                             <Stack gap="xs">
                                 <Radio value="left" label={<><IconPingPong size={18} /> First Serve </>} />
-                                <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
-                                    <AnimatePresence initial={false}>
-                                        <motion.div
-                                            key={`left-${nameSwapKey}`}
-                                            initial={{ y: -20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            exit={{ y: 20, opacity: 0 }}
-                                            transition={nameSwapTransition}
-                                            style={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                boxSizing: 'border-box',
-                                            }}
-                                        >
-                                            <TextInput
-                                                placeholder="Left player"
-                                                variant="unstyled"
-                                                value={playersScore?.leftPlayerName ?? ""}
-                                                onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, leftPlayerName: e.currentTarget.value })}
-                                                size="xl"
-                                                styles={{
-                                                    root: { width: '100%' },
-                                                    input: {
-                                                        fontSize: rem(60),
-                                                        minHeight: rem(112),
-                                                        border: 'none',
-                                                        outline: 'none',
-                                                        boxShadow: 'none',
-                                                        backgroundColor: 'transparent',
-                                                        paddingLeft: 0,
-                                                        paddingRight: 0,
-                                                    },
+                                {swapOnNextMatch ? (
+                                    <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
+                                        <AnimatePresence initial={false}>
+                                            <motion.div
+                                                key={`left-${nameSwapKey}`}
+                                                initial={{ y: -20, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                exit={{ y: 20, opacity: 0 }}
+                                                transition={nameSwapTransition}
+                                                style={{
+                                                    position: 'absolute',
+                                                    left: 0, top: 0, right: 0, bottom: 0,
+                                                    display: 'flex', alignItems: 'center', boxSizing: 'border-box',
                                                 }}
-                                            />
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </Box>
+                                            >
+                                                <TextInput
+                                                    placeholder="Left player"
+                                                    variant="unstyled"
+                                                    value={playersScore?.leftPlayerName ?? ""}
+                                                    onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, leftPlayerName: e.currentTarget.value })}
+                                                    size="xl"
+                                                    styles={{
+                                                        root: { width: '100%' },
+                                                        input: {
+                                                            fontSize: rem(60),
+                                                            minHeight: rem(112),
+                                                            border: 'none', outline: 'none', boxShadow: 'none',
+                                                            backgroundColor: 'transparent', paddingLeft: 0, paddingRight: 0,
+                                                        },
+                                                    }}
+                                                />
+                                            </motion.div>
+                                        </AnimatePresence>
+                                    </Box>
+                                ) : (
+                                    <TextInput
+                                        placeholder="Left player"
+                                        variant="unstyled"
+                                        value={playersScore?.leftPlayerName ?? ""}
+                                        onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, leftPlayerName: e.currentTarget.value })}
+                                        size="xl"
+                                        styles={{
+                                            root: { width: '100%' },
+                                            input: {
+                                                fontSize: rem(60),
+                                                minHeight: rem(112),
+                                                border: 'none', outline: 'none', boxShadow: 'none',
+                                                backgroundColor: 'transparent', paddingLeft: 0, paddingRight: 0,
+                                            },
+                                        }}
+                                    />
+                                )}
                             </Stack>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
                             <Stack gap="xs" align="flex-end">
                                 <Radio value="right" label={<><IconPingPong size={18} /> First Serve </>} />
-                                <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
-                                    <AnimatePresence initial={false}>
-                                        <motion.div
-                                            key={`right-${nameSwapKey}`}
-                                            initial={{ y: -20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            exit={{ y: 20, opacity: 0 }}
-                                            transition={nameSwapTransition}
-                                            style={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end',
-                                                boxSizing: 'border-box',
-                                            }}
-                                        >
-                                            <TextInput
-                                                placeholder="Right player"
-                                                variant="unstyled"
-                                                value={playersScore?.rightPlayerName ?? ""}
-                                                onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, rightPlayerName: e.currentTarget.value })}
-                                                size="xl"
-                                                styles={{
-                                                    root: { width: '100%' },
-                                                    input: {
-                                                        fontSize: rem(60),
-                                                        minHeight: rem(112),
-                                                        border: 'none',
-                                                        outline: 'none',
-                                                        boxShadow: 'none',
-                                                        backgroundColor: 'transparent',
-                                                        paddingLeft: 0,
-                                                        paddingRight: 0,
-                                                        textAlign: 'right',
-                                                    },
+                                {swapOnNextMatch ? (
+                                    <Box style={{ position: 'relative', overflow: 'hidden', width: '100%', minWidth: 0, minHeight: rem(112) }}>
+                                        <AnimatePresence initial={false}>
+                                            <motion.div
+                                                key={`right-${nameSwapKey}`}
+                                                initial={{ y: -20, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                exit={{ y: 20, opacity: 0 }}
+                                                transition={nameSwapTransition}
+                                                style={{
+                                                    position: 'absolute',
+                                                    left: 0, top: 0, right: 0, bottom: 0,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'flex-end', boxSizing: 'border-box',
                                                 }}
-                                            />
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </Box>
+                                            >
+                                                <TextInput
+                                                    placeholder="Right player"
+                                                    variant="unstyled"
+                                                    value={playersScore?.rightPlayerName ?? ""}
+                                                    onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, rightPlayerName: e.currentTarget.value })}
+                                                    size="xl"
+                                                    styles={{
+                                                        root: { width: '100%' },
+                                                        input: {
+                                                            fontSize: rem(60),
+                                                            minHeight: rem(112),
+                                                            border: 'none', outline: 'none', boxShadow: 'none',
+                                                            backgroundColor: 'transparent', paddingLeft: 0, paddingRight: 0,
+                                                            textAlign: 'right',
+                                                        },
+                                                    }}
+                                                />
+                                            </motion.div>
+                                        </AnimatePresence>
+                                    </Box>
+                                ) : (
+                                    <TextInput
+                                        placeholder="Right player"
+                                        variant="unstyled"
+                                        value={playersScore?.rightPlayerName ?? ""}
+                                        onChange={(e) => !!playersScore && setPlayersScore({ ...playersScore, rightPlayerName: e.currentTarget.value })}
+                                        size="xl"
+                                        styles={{
+                                            root: { width: '100%' },
+                                            input: {
+                                                fontSize: rem(60),
+                                                minHeight: rem(112),
+                                                border: 'none', outline: 'none', boxShadow: 'none',
+                                                backgroundColor: 'transparent', paddingLeft: 0, paddingRight: 0,
+                                                textAlign: 'right',
+                                            },
+                                        }}
+                                    />
+                                )}
                             </Stack>
                         </Grid.Col>
                     </Grid>
