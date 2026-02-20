@@ -19,6 +19,8 @@ import {
   Minimize,
   Swords,
   Github,
+  Play,
+  Pause,
 } from 'lucide-react'
 
 const MAX = 49
@@ -237,13 +239,21 @@ export default function ScoreBoard() {
         <div />
 
         {/* Center: Timer */}
-        <div className='flex justify-center'>
-          <span
-            className={`font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600 transition-opacity duration-200${showTimer ? '' : ' invisible'}`}
-          >
-            {String(minutes).padStart(2, '0')}:
-            {String(seconds).padStart(2, '0')}
-          </span>
+        <div className={`flex justify-center transition-opacity duration-200${showTimer ? '' : ' invisible'}`}>
+          <div className='relative flex items-center'>
+            <motion.button
+              {...tapScale}
+              onClick={isRunning ? pause : start}
+              title={isRunning ? 'Pause timer' : 'Start timer'}
+              className='absolute right-full mr-1 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors'
+            >
+              {isRunning ? <Pause size={18} /> : <Play size={18} />}
+            </motion.button>
+            <span className='font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600'>
+              {String(minutes).padStart(2, '0')}:
+              {String(seconds).padStart(2, '0')}
+            </span>
+          </div>
         </div>
 
         {/* Right: Action buttons */}
@@ -275,9 +285,6 @@ export default function ScoreBoard() {
             onSwapMatchScore={swapMatchScore}
             showTimer={showTimer}
             onToggleTimer={() => setShowTimer((v) => !v)}
-            isTimerRunning={isRunning}
-            onTimerStart={start}
-            onTimerPause={pause}
             onTimerReset={() => reset(new Date(), false)}
             score={score}
           />

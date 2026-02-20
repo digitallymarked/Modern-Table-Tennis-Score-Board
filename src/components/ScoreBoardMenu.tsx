@@ -8,8 +8,6 @@ import {
   Trash2,
   ArrowLeftRight,
   ArrowUpDown,
-  Play,
-  Pause,
   Eye,
   EyeOff,
   Share2,
@@ -24,9 +22,6 @@ interface ScoreBoardMenuProps {
   onSwapGameScore: () => void
   showTimer: boolean
   onToggleTimer: () => void
-  isTimerRunning: boolean
-  onTimerStart: () => void
-  onTimerPause: () => void
   onTimerReset: () => void
   score: ScoreObject
 }
@@ -47,9 +42,6 @@ export default function ScoreBoardMenu({
   onSwapGameScore,
   showTimer,
   onToggleTimer,
-  isTimerRunning,
-  onTimerStart,
-  onTimerPause,
   onTimerReset,
   score,
 }: ScoreBoardMenuProps) {
@@ -107,16 +99,6 @@ export default function ScoreBoardMenu({
 
             {/* Timer */}
             <p className={labelClass}>Timer</p>
-            {!isTimerRunning && (
-              <Menu.Item className={itemClass} onClick={onTimerStart}>
-                <Play size={14} /> Start Timer
-              </Menu.Item>
-            )}
-            {isTimerRunning && (
-              <Menu.Item className={itemClass} onClick={onTimerPause}>
-                <Pause size={14} /> Pause Timer
-              </Menu.Item>
-            )}
             <Menu.Item className={itemClass} onClick={onTimerReset}>
               <RotateCcw size={14} /> Reset Timer
             </Menu.Item>
