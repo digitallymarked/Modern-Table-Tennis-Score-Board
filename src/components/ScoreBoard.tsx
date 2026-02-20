@@ -301,7 +301,7 @@ export default function ScoreBoard() {
       </div>
 
       {/* Player names + serve ball */}
-      <div className='grid grid-cols-2 gap-4 px-4'>
+      <div className='grid grid-cols-[1fr_auto_1fr] items-center px-4'>
         <input
           className='text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
           placeholder='Player 1'
@@ -310,6 +310,24 @@ export default function ScoreBoard() {
             setScore((prev) => ({ ...prev, leftPlayerName: e.target.value }))
           }
         />
+        <AnimatePresence>
+          {whoWon !== '' && (
+            <motion.button
+              key='next-match'
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              whileTap={{ scale: 0.88 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+              onClick={nextMatch}
+              title='Start next game'
+              className='flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors'
+            >
+              <SkipForward size={18} />
+              Next game
+            </motion.button>
+          )}
+        </AnimatePresence>
         <input
           className='text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
           placeholder='Player 2'
@@ -421,53 +439,33 @@ export default function ScoreBoard() {
             </div>
           </div>
 
-          {/* Deuce / Win status + Next match */}
-          <div className='flex flex-col items-center gap-2 text-center'>
-            <AnimatePresence mode='wait'>
-              {isDeuce && whoWon === '' && (
-                <motion.div
-                  key='deuce'
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.7 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  className='flex items-center gap-1 text-sm font-light text-gray-500 dark:text-gray-400'
-                >
-                  <Swords size={16} /> Deuce
-                </motion.div>
-              )}
-              {whoWon !== '' && (
-                <motion.div
-                  key='winner'
-                  initial={{ opacity: 0, scale: 0.5, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                  className='text-base font-bold leading-tight'
-                >
-                  {whoWon}
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <AnimatePresence>
-              {whoWon !== '' && (
-                <motion.button
-                  key='next-match'
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.7 }}
-                  whileTap={{ scale: 0.88 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                  onClick={nextMatch}
-                  title='Start next game'
-                  className='flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors'
-                >
-                  <SkipForward size={18} />
-                  Next game
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Deuce / Win status */}
+          <AnimatePresence mode='wait'>
+            {isDeuce && whoWon === '' && (
+              <motion.div
+                key='deuce'
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.7 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                className='flex items-center gap-1 text-sm font-light text-gray-500 dark:text-gray-400'
+              >
+                <Swords size={16} /> Deuce
+              </motion.div>
+            )}
+            {whoWon !== '' && (
+              <motion.div
+                key='winner'
+                initial={{ opacity: 0, scale: 0.5, y: -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+                className='text-base font-bold leading-tight text-center'
+              >
+                {whoWon}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Right game score */}
