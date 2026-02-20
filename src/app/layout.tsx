@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/components/ThemeProvider'
-import FooterComp from '@/components/FooterComp'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -15,7 +14,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased">
         <ThemeProvider>
           <main>{children}</main>
-          <FooterComp />
         </ThemeProvider>
       </body>
     </html>
