@@ -310,26 +310,20 @@ export default function ScoreBoard() {
             setScore((prev) => ({ ...prev, leftPlayerName: e.target.value }))
           }
         />
-        <AnimatePresence>
-          {whoWon !== '' && (
-            <motion.button
-              key='next-match'
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              whileTap={{ scale: 0.88 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-              onClick={nextMatch}
-              title='Start next game'
-              className='flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors'
-            >
-              <SkipForward size={18} />
-              Next game
-            </motion.button>
-          )}
-        </AnimatePresence>
+        <motion.button
+          animate={{ opacity: whoWon !== '' ? 1 : 0, scale: whoWon !== '' ? 1 : 0.7 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+          whileTap={{ scale: 0.88 }}
+          onClick={nextMatch}
+          title='Start next game'
+          disabled={whoWon === ''}
+          className='flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors disabled:pointer-events-none'
+        >
+          <SkipForward size={18} />
+          Next game
+        </motion.button>
         <input
-          className='w-full text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+          className='justify-self-end text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
           placeholder='Player 2'
           value={score.rightPlayerName ?? ''}
           onChange={(e) =>
