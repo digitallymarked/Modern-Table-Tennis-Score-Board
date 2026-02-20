@@ -41,11 +41,6 @@ export default function ScoreBoard() {
     'score-board-show-timer',
     true,
   )
-  const [swapOnNextMatch, setSwapOnNextMatch] = useLocalStorage<boolean>(
-    'score-board-swap-on-next-match',
-    true,
-  )
-
   const [isShaking, setIsShaking] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -200,20 +195,14 @@ export default function ScoreBoard() {
     )
     if (whoWon === '') return
 
-    let newLeftMatch = swapOnNextMatch
-      ? score.rightPlayerMatchScore
-      : score.leftPlayerMatchScore
-    let newRightMatch = swapOnNextMatch
-      ? score.leftPlayerMatchScore
-      : score.rightPlayerMatchScore
+    // Players always swap sides — cross the match scores with them.
+    // The winner gets +1 on their new (post-swap) side.
+    // whoServeFirst is positional and stays unchanged so the same side serves.
+    let newLeftMatch = score.rightPlayerMatchScore
+    let newRightMatch = score.leftPlayerMatchScore
 
-    if (whoWon === '< Left Win') {
-      if (swapOnNextMatch) newRightMatch += 1
-      else newLeftMatch += 1
-    } else if (whoWon === 'Right Win >') {
-      if (swapOnNextMatch) newLeftMatch += 1
-      else newRightMatch += 1
-    }
+    if (whoWon === '< Left Win') newRightMatch += 1
+    else if (whoWon === 'Right Win >') newLeftMatch += 1
 
     setScore((prev) => ({
       ...prev,
@@ -221,11 +210,8 @@ export default function ScoreBoard() {
       rightPlayerScore: 0,
       leftPlayerMatchScore: newLeftMatch,
       rightPlayerMatchScore: newRightMatch,
-      ...(swapOnNextMatch && {
-        whoServeFirst: prev.whoServeFirst === 'right' ? 'left' : 'right',
-        leftPlayerName: prev.rightPlayerName ?? '',
-        rightPlayerName: prev.leftPlayerName ?? '',
-      }),
+      leftPlayerName: prev.rightPlayerName ?? '',
+      rightPlayerName: prev.leftPlayerName ?? '',
     }))
     previousWinner.current = ''
     reset(new Date(), false)
@@ -294,8 +280,6 @@ export default function ScoreBoard() {
             onSwapMatchScore={swapMatchScore}
             showTimer={showTimer}
             onToggleTimer={() => setShowTimer((v) => !v)}
-            swapOnNextMatch={swapOnNextMatch}
-            onToggleSwapOnNextMatch={(val) => setSwapOnNextMatch(val)}
             isTimerRunning={isRunning}
             onTimerStart={start}
             onTimerPause={pause}

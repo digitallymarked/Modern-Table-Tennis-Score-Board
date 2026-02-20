@@ -1,7 +1,6 @@
 'use client'
 
 import { Menu } from '@base-ui/react/menu'
-import { Switch } from './ui/switch'
 import {
   IconCategory,
   IconZoomReset,
@@ -14,7 +13,6 @@ import {
   IconEye,
   IconEyeOff,
   IconShare,
-  IconPlayerTrackNextFilled,
 } from '@tabler/icons-react'
 import type { ScoreObject } from '@/lib/types'
 
@@ -26,8 +24,6 @@ interface ScoreBoardMenuProps {
   onSwapGameScore: () => void
   showTimer: boolean
   onToggleTimer: () => void
-  swapOnNextMatch: boolean
-  onToggleSwapOnNextMatch: (val: boolean) => void
   isTimerRunning: boolean
   onTimerStart: () => void
   onTimerPause: () => void
@@ -51,8 +47,6 @@ export default function ScoreBoardMenu({
   onSwapGameScore,
   showTimer,
   onToggleTimer,
-  swapOnNextMatch,
-  onToggleSwapOnNextMatch,
   isTimerRunning,
   onTimerStart,
   onTimerPause,
@@ -97,22 +91,6 @@ export default function ScoreBoardMenu({
             <Menu.Item className={itemClass} onClick={onResetAll}>
               <IconServerCog size={14} /> Reset All
             </Menu.Item>
-
-            <hr className={separatorClass} />
-
-            {/* Next Match */}
-            <p className={labelClass}>Next Match</p>
-            {/* Switch as a non-menu-item to prevent close on click */}
-            <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              <span className="flex items-center gap-2">
-                <IconPlayerTrackNextFilled size={14} />
-                Swap sides on next match
-              </span>
-              <Switch
-                checked={swapOnNextMatch}
-                onCheckedChange={onToggleSwapOnNextMatch}
-              />
-            </div>
 
             <hr className={separatorClass} />
 
