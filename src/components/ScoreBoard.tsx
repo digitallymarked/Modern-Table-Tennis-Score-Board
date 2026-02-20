@@ -288,26 +288,32 @@ export default function ScoreBoard() {
 
         {/* Left game score */}
         <div className="flex flex-col items-center gap-2">
-          <motion.button
-            {...tapScale}
-            onClick={() => adjustScore('leftPlayerScore', 1)}
-            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-          >
-            <IconPlus size={24} strokeWidth={2} />
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              {...tapScale}
+              onClick={() => adjustScore('leftPlayerScore', 1)}
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            >
+              <IconPlus size={24} strokeWidth={2} />
+            </motion.button>
+            <kbd className="text-[11px] font-mono text-gray-300 dark:text-gray-600 select-none">Q</kbd>
+          </div>
           <ScoreDrag
             score={score.leftPlayerScore}
             onChange={v => changeScore(v, 'leftPlayerScore')}
             variant="main"
             color="left"
           />
-          <motion.button
-            {...tapScale}
-            onClick={() => adjustScore('leftPlayerScore', -1)}
-            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-          >
-            <IconMinus size={24} strokeWidth={2} />
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              {...tapScale}
+              onClick={() => adjustScore('leftPlayerScore', -1)}
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            >
+              <IconMinus size={24} strokeWidth={2} />
+            </motion.button>
+            <kbd className="text-[11px] font-mono text-gray-300 dark:text-gray-600 select-none">A</kbd>
+          </div>
 
           {currentServer === 'left' && (
             <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold">
@@ -322,48 +328,60 @@ export default function ScoreBoard() {
           {/* Match score carousels */}
           <div className="flex gap-1 items-start">
             <div className="flex flex-col items-center gap-1">
-              <motion.button
-                {...tapScale}
-                onClick={() => adjustScore('leftPlayerMatchScore', 1)}
-                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-              >
-                <IconPlus size={18} />
-              </motion.button>
+              <div className="flex items-center gap-1">
+                <motion.button
+                  {...tapScale}
+                  onClick={() => adjustScore('leftPlayerMatchScore', 1)}
+                  className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                >
+                  <IconPlus size={18} />
+                </motion.button>
+                <kbd className="text-[10px] font-mono text-gray-300 dark:text-gray-600 select-none">W</kbd>
+              </div>
               <ScoreDrag
                 score={score.leftPlayerMatchScore}
                 onChange={v => changeScore(v, 'leftPlayerMatchScore')}
                 variant="match"
                 color="left"
               />
-              <motion.button
-                {...tapScale}
-                onClick={() => adjustScore('leftPlayerMatchScore', -1)}
-                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-              >
-                <IconMinus size={18} />
-              </motion.button>
+              <div className="flex items-center gap-1">
+                <motion.button
+                  {...tapScale}
+                  onClick={() => adjustScore('leftPlayerMatchScore', -1)}
+                  className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                >
+                  <IconMinus size={18} />
+                </motion.button>
+                <kbd className="text-[10px] font-mono text-gray-300 dark:text-gray-600 select-none">S</kbd>
+              </div>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <motion.button
-                {...tapScale}
-                onClick={() => adjustScore('rightPlayerMatchScore', 1)}
-                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-              >
-                <IconPlus size={18} />
-              </motion.button>
+              <div className="flex items-center gap-1">
+                <kbd className="text-[10px] font-mono text-gray-300 dark:text-gray-600 select-none">R</kbd>
+                <motion.button
+                  {...tapScale}
+                  onClick={() => adjustScore('rightPlayerMatchScore', 1)}
+                  className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                >
+                  <IconPlus size={18} />
+                </motion.button>
+              </div>
               <ScoreDrag
                 score={score.rightPlayerMatchScore}
                 onChange={v => changeScore(v, 'rightPlayerMatchScore')}
                 variant="match"
                 color="right"
               />
-              <motion.button
-                {...tapScale}
-                onClick={() => adjustScore('rightPlayerMatchScore', -1)}
-                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-              >
-                <IconMinus size={18} />
-              </motion.button>
+              <div className="flex items-center gap-1">
+                <kbd className="text-[10px] font-mono text-gray-300 dark:text-gray-600 select-none">F</kbd>
+                <motion.button
+                  {...tapScale}
+                  onClick={() => adjustScore('rightPlayerMatchScore', -1)}
+                  className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                >
+                  <IconMinus size={18} />
+                </motion.button>
+              </div>
             </div>
           </div>
 
@@ -400,26 +418,32 @@ export default function ScoreBoard() {
 
         {/* Right game score */}
         <div className="flex flex-col items-center gap-2">
-          <motion.button
-            {...tapScale}
-            onClick={() => adjustScore('rightPlayerScore', 1)}
-            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-          >
-            <IconPlus size={24} strokeWidth={2} />
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <kbd className="text-[11px] font-mono text-gray-300 dark:text-gray-600 select-none">E</kbd>
+            <motion.button
+              {...tapScale}
+              onClick={() => adjustScore('rightPlayerScore', 1)}
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            >
+              <IconPlus size={24} strokeWidth={2} />
+            </motion.button>
+          </div>
           <ScoreDrag
             score={score.rightPlayerScore}
             onChange={v => changeScore(v, 'rightPlayerScore')}
             variant="main"
             color="right"
           />
-          <motion.button
-            {...tapScale}
-            onClick={() => adjustScore('rightPlayerScore', -1)}
-            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-          >
-            <IconMinus size={24} strokeWidth={2} />
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <kbd className="text-[11px] font-mono text-gray-300 dark:text-gray-600 select-none">D</kbd>
+            <motion.button
+              {...tapScale}
+              onClick={() => adjustScore('rightPlayerScore', -1)}
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            >
+              <IconMinus size={24} strokeWidth={2} />
+            </motion.button>
+          </div>
 
           {currentServer === 'right' && (
             <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold">
