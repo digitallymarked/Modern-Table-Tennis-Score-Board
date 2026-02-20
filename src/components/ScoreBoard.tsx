@@ -57,12 +57,12 @@ export default function ScoreBoard() {
       const map: Record<string, () => void> = {
         q: () => adjustScore('leftPlayerScore', 1),
         w: () => adjustScore('leftPlayerMatchScore', 1),
-        e: () => adjustScore('rightPlayerScore', 1),
-        r: () => adjustScore('rightPlayerMatchScore', 1),
+        e: () => adjustScore('rightPlayerMatchScore', 1),
+        r: () => adjustScore('rightPlayerScore', 1),
         a: () => adjustScore('leftPlayerScore', -1),
         s: () => adjustScore('leftPlayerMatchScore', -1),
-        d: () => adjustScore('rightPlayerScore', -1),
-        f: () => adjustScore('rightPlayerMatchScore', -1),
+        d: () => adjustScore('rightPlayerMatchScore', -1),
+        f: () => adjustScore('rightPlayerScore', -1),
       }
       map[e.key.toLowerCase()]?.()
     }
@@ -349,7 +349,7 @@ export default function ScoreBoard() {
               <Kbd>S</Kbd>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <Kbd>R</Kbd>
+              <Kbd>E</Kbd>
               <motion.button
                 {...tapScale}
                 onClick={() => adjustScore('rightPlayerMatchScore', 1)}
@@ -370,7 +370,7 @@ export default function ScoreBoard() {
               >
                 <IconMinus size={18} />
               </motion.button>
-              <Kbd>F</Kbd>
+              <Kbd>D</Kbd>
             </div>
           </div>
 
@@ -407,7 +407,7 @@ export default function ScoreBoard() {
 
         {/* Right game score */}
         <div className="flex flex-col items-center gap-1">
-          <Kbd>E</Kbd>
+          <Kbd>R</Kbd>
           <motion.button
             {...tapScale}
             onClick={() => adjustScore('rightPlayerScore', 1)}
@@ -428,7 +428,7 @@ export default function ScoreBoard() {
           >
             <IconMinus size={24} strokeWidth={2} />
           </motion.button>
-          <Kbd>D</Kbd>
+          <Kbd>F</Kbd>
 
           {currentServer === 'right' && (
             <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold">
