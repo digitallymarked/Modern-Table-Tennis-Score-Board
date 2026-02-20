@@ -1,72 +1,111 @@
-import { Carousel } from '@mantine/carousel';
-import { Box, Card, Text } from '@mantine/core';
-import { useElementSize } from '@mantine/hooks';
-import { EmblaCarouselType } from 'embla-carousel';
-import { useMemo } from 'react';
+'use client'
 
-type ScoreDragProps = {
-    changeScore?: Function;
-    maxScore?: number
-    height?: number;
-    initialSlide: number;
-    fontSize?: number;
-    player: string;
-    setEmbla?: (embla: EmblaCarouselType) => void;
-    cardBackgroundColor?: string;
+import { useEffect, useRef, useState } from 'react'
+import { motion, useMotionValue, animate } from 'motion/react'
+
+const MAX_SCORE = 50
+const GAP = 4
+
+interface ScoreDragProps {
+  score: number
+  onChange: (score: number) => void
+  variant?: 'main' | 'match'
+  color: 'left' | 'right'
 }
 
-const FALLBACK_CAROUSEL_HEIGHT = 400;
+export default function ScoreDrag({ score, onChange, variant = 'main', color }: ScoreDragProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [slideHeight, setSlideHeight] = useState(0)
+  const y = useMotionValue(0)
+  const isDragging = useRef(false)
+  const initialized = useRef(false)
+  const committedScore = useRef(score)
 
-function ScoreDrag({ changeScore, player = "", maxScore = 50, height = 700, initialSlide = 0, fontSize = 18, setEmbla, cardBackgroundColor }: ScoreDragProps) {
-
-    const initialSlideScore = useMemo(() => initialSlide, []);
-    const { ref: containerRef, height: measuredHeight } = useElementSize();
-    const carouselHeight = (measuredHeight && measuredHeight > 0) ? measuredHeight : FALLBACK_CAROUSEL_HEIGHT;
-    // Scale number size with card height (fontSize prop: 18 = game score, 8 = match score)
-    const numberSizePx = carouselHeight * (fontSize / 40);
-
-    function changeSlice(e: number) {
-        !!changeScore && changeScore(e, player)
+  // Measure container height
+  useEffect(() => {
+    const el = wrapperRef.current
+    if (!el) return
+    const measure = () => {
+      const h = el.clientHeight
+      if (h > 0) setSlideHeight(h)
     }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
-    return (
-        <Box
-            ref={containerRef}
-            w="100%"
-            p={4}
+  const slideStep = slideHeight + GAP
+
+  // Sync y to score — instant on first paint, spring on subsequent changes
+  useEffect(() => {
+    if (slideHeight === 0 || isDragging.current) return
+    committedScore.current = score
+    const targetY = -score * slideStep
+    if (!initialized.current) {
+      initialized.current = true
+      y.set(targetY)
+    } else {
+      animate(y, targetY, { type: 'spring', stiffness: 400, damping: 35 })
+    }
+  }, [score, slideStep, y, slideHeight])
+
+  function handleDragEnd() {
+    isDragging.current = false
+    const raw = -y.get() / slideStep
+    const next = Math.max(0, Math.min(MAX_SCORE - 1, Math.round(raw)))
+    animate(y, -next * slideStep, { type: 'spring', stiffness: 400, damping: 35 })
+    if (next !== committedScore.current) {
+      committedScore.current = next
+      onChange(next)
+    }
+  }
+
+  const cardBg = color === 'left' ? 'var(--left-card-bg)' : 'var(--right-card-bg)'
+
+  const fontSize = slideHeight > 0
+    ? Math.max(
+        variant === 'main' ? Math.round(slideHeight * 0.45) : Math.round(slideHeight * 0.28),
+        variant === 'main' ? 60 : 28,
+      )
+    : variant === 'main' ? 120 : 48
+
+  const containerStyle: React.CSSProperties = {
+    height: variant === 'main' ? 'min(600px, 45vh)' : 'min(300px, 45vh)',
+    minHeight: variant === 'main' ? '200px' : '120px',
+  }
+
+  return (
+    <div ref={wrapperRef} className="w-full rounded-xl overflow-hidden" style={containerStyle}>
+      <motion.div
+        style={{ y, display: 'flex', flexDirection: 'column', gap: `${GAP}px`, touchAction: 'none' }}
+        drag={slideHeight > 0 ? 'y' : false}
+        dragConstraints={{ top: -(MAX_SCORE - 1) * slideStep, bottom: 0 }}
+        dragMomentum={false}
+        dragElastic={0.05}
+        onDragStart={() => { isDragging.current = true }}
+        onDragEnd={handleDragEnd}
+      >
+        {Array.from({ length: MAX_SCORE }, (_, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-center rounded-xl mx-1 border border-black/10 dark:border-white/10"
             style={{
-                height: `min(${height}px, 45vh)`,
-                minHeight: 200,
+              flex: `0 0 ${slideHeight}px`,
+              height: `${slideHeight}px`,
+              backgroundColor: cardBg,
+              visibility: slideHeight === 0 ? 'hidden' : 'visible',
             }}
-        >
-            <Carousel
-                emblaOptions={{ align: 'end' }}
-                initialSlide={initialSlideScore}
-                slideGap="md"
-                getEmblaApi={!!setEmbla ? setEmbla : () => { }}
-                orientation="vertical"
-                height={carouselHeight}
-                withControls={false}
-                onSlideChange={(e: number) => changeSlice(e)}
+          >
+            <span
+              className="font-black tabular-nums select-none leading-none"
+              style={{ fontSize: `${fontSize}px` }}
             >
-                {[...Array(maxScore)].map((_, i) => i).map(v => (
-                    <Carousel.Slide key={v}>
-                        <Box py={4} px={2} h="100%" style={{ boxSizing: 'border-box' }}>
-                            <Card shadow="sm" padding="md" radius="md" withBorder style={{ height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", ...(cardBackgroundColor && { backgroundColor: cardBackgroundColor }) }}>
-                                <Text
-                                    fz={`${Math.round(numberSizePx)}px`}
-                                    ta="center"
-                                    style={{ lineHeight: 1, width: "100%" }}
-                                >
-                                    {v}
-                                </Text>
-                            </Card>
-                        </Box>
-                    </Carousel.Slide>
-                ))}
-            </Carousel>
-        </Box>
-    )
+              {i}
+            </span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  )
 }
-
-export default ScoreDrag
