@@ -301,65 +301,42 @@ export default function ScoreBoard() {
       </div>
 
       {/* Player names + serve ball */}
-      <div className='grid grid-cols-2 gap-4 px-4 mb-3'>
-        <div className='flex items-center gap-2 min-w-0'>
-          <input
-            className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
-            placeholder='Player 1'
-            value={score.leftPlayerName ?? ''}
-            onChange={(e) =>
-              setScore((prev) => ({ ...prev, leftPlayerName: e.target.value }))
-            }
-          />
-          <AnimatePresence>
-            {currentServer === 'left' && (
-              <motion.button
-                layoutId='serve-ball'
-                whileTap={{ scale: 0.85 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                onClick={() =>
-                  setScore((prev) => ({
-                    ...prev,
-                    whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
-                  }))
-                }
-                className='flex-none w-10 h-10'
-                title='Tap to change first server'
-              >
-                <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </div>
-        <div className='flex items-center gap-2 justify-end min-w-0'>
-          <AnimatePresence>
-            {currentServer === 'right' && (
-              <motion.button
-                layoutId='serve-ball'
-                whileTap={{ scale: 0.85 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                onClick={() =>
-                  setScore((prev) => ({
-                    ...prev,
-                    whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
-                  }))
-                }
-                className='flex-none w-10 h-10'
-                title='Tap to change first server'
-              >
-                <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
-              </motion.button>
-            )}
-          </AnimatePresence>
-          <input
-            className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
-            placeholder='Player 2'
-            value={score.rightPlayerName ?? ''}
-            onChange={(e) =>
-              setScore((prev) => ({ ...prev, rightPlayerName: e.target.value }))
-            }
-          />
-        </div>
+      <div className='grid grid-cols-2 gap-4 px-4'>
+        <input
+          className='text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+          placeholder='Player 1'
+          value={score.leftPlayerName ?? ''}
+          onChange={(e) =>
+            setScore((prev) => ({ ...prev, leftPlayerName: e.target.value }))
+          }
+        />
+        <input
+          className='text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+          placeholder='Player 2'
+          value={score.rightPlayerName ?? ''}
+          onChange={(e) =>
+            setScore((prev) => ({ ...prev, rightPlayerName: e.target.value }))
+          }
+        />
+      </div>
+
+      {/* Serve ball — travels full screen width */}
+      <div className={`flex px-4 py-2 mb-1 ${currentServer === 'left' ? 'justify-start' : 'justify-end'}`}>
+        <motion.button
+          layout
+          transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+          whileTap={{ scale: 0.85 }}
+          onClick={() =>
+            setScore((prev) => ({
+              ...prev,
+              whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
+            }))
+          }
+          className='w-10 h-10'
+          title='Tap to change first server'
+        >
+          <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
+        </motion.button>
       </div>
 
       {/* Score grid */}
