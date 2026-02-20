@@ -329,7 +329,7 @@ export default function ScoreBoard() {
           )}
         </AnimatePresence>
         <input
-          className='text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+          className='w-full text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
           placeholder='Player 2'
           value={score.rightPlayerName ?? ''}
           onChange={(e) =>
