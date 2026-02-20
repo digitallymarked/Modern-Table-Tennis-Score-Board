@@ -307,20 +307,32 @@ export default function ScoreBoard() {
         </div>
       </div>
 
+      {/* Match title */}
+      <div className='px-4 pb-1'>
+        <input
+          className='w-full text-center text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600'
+          placeholder='Match title...'
+          value={score.freeText}
+          onChange={(e) =>
+            setScore((prev) => ({ ...prev, freeText: e.target.value }))
+          }
+        />
+      </div>
+
       {/* Player names */}
       <div className='grid grid-cols-2 gap-4 px-4 mb-3'>
         <div className='flex items-center gap-2'>
           <motion.button
             {...tapScale}
-            className={`w-3.5 h-3.5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'left' ? 'border-orange-400 bg-orange-400' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-5 h-5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'left' ? 'border-orange-400 bg-orange-400' : 'border-gray-300 dark:border-gray-600'}`}
             onClick={() =>
               setScore((prev) => ({ ...prev, whoServeFirst: 'left' }))
             }
             title='Left serves first'
           />
-          <IconPingPong size={16} className='text-gray-400 flex-none' />
+          <IconPingPong size={24} className='text-gray-400 flex-none' />
           <input
-            className='flex-1 text-xl md:text-3xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+            className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
             placeholder='Player 1'
             value={score.leftPlayerName ?? ''}
             onChange={(e) =>
@@ -330,17 +342,17 @@ export default function ScoreBoard() {
         </div>
         <div className='flex items-center gap-2 justify-end'>
           <input
-            className='flex-1 text-xl md:text-3xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
+            className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
             placeholder='Player 2'
             value={score.rightPlayerName ?? ''}
             onChange={(e) =>
               setScore((prev) => ({ ...prev, rightPlayerName: e.target.value }))
             }
           />
-          <IconPingPong size={16} className='text-gray-400 flex-none' />
+          <IconPingPong size={24} className='text-gray-400 flex-none' />
           <motion.button
             {...tapScale}
-            className={`w-3.5 h-3.5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'right' ? 'border-blue-400 bg-blue-400' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-5 h-5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'right' ? 'border-blue-400 bg-blue-400' : 'border-gray-300 dark:border-gray-600'}`}
             onClick={() =>
               setScore((prev) => ({ ...prev, whoServeFirst: 'right' }))
             }
@@ -521,17 +533,6 @@ export default function ScoreBoard() {
         </div>
       </div>
 
-      {/* Free text / match title */}
-      <div className='px-4 mt-4 pb-4'>
-        <input
-          className='w-full text-center text-sm bg-transparent border-b border-gray-200 dark:border-gray-700 outline-none py-1 text-gray-500 dark:text-gray-400 placeholder:text-gray-300 dark:placeholder:text-gray-600'
-          placeholder='Match title / notes...'
-          value={score.freeText}
-          onChange={(e) =>
-            setScore((prev) => ({ ...prev, freeText: e.target.value }))
-          }
-        />
-      </div>
     </motion.div>
   )
 }
