@@ -50,6 +50,26 @@ export default function ScoreBoard() {
     return () => document.removeEventListener('fullscreenchange', handler)
   }, [])
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      const map: Record<string, () => void> = {
+        q: () => adjustScore('leftPlayerScore', 1),
+        w: () => adjustScore('leftPlayerMatchScore', 1),
+        e: () => adjustScore('rightPlayerScore', 1),
+        r: () => adjustScore('rightPlayerMatchScore', 1),
+        a: () => adjustScore('leftPlayerScore', -1),
+        s: () => adjustScore('leftPlayerMatchScore', -1),
+        d: () => adjustScore('rightPlayerScore', -1),
+        f: () => adjustScore('rightPlayerMatchScore', -1),
+      }
+      map[e.key.toLowerCase()]?.()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen()
     else document.documentElement.requestFullscreen()
