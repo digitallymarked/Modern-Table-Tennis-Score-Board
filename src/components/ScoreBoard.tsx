@@ -367,7 +367,7 @@ export default function ScoreBoard() {
           className='w-10 h-10'
         >
           <img
-            src='/tt-ball.svg'
+            src='/ttscore/tt-ball.svg'
             alt='Serving'
             className='w-full h-full drop-shadow'
             draggable={false}
