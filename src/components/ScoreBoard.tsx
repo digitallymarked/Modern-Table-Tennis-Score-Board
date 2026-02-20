@@ -18,7 +18,6 @@ import {
   Maximize,
   Minimize,
   Swords,
-  Dot,
   Github,
 } from 'lucide-react'
 
@@ -301,17 +300,9 @@ export default function ScoreBoard() {
         />
       </div>
 
-      {/* Player names */}
+      {/* Player names + serve ball */}
       <div className='grid grid-cols-2 gap-4 px-4 mb-3'>
-        <div className='flex items-center gap-2'>
-          <motion.button
-            {...tapScale}
-            className={`w-5 h-5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'left' ? 'border-orange-400 bg-orange-400' : 'border-gray-300 dark:border-gray-600'}`}
-            onClick={() =>
-              setScore((prev) => ({ ...prev, whoServeFirst: 'left' }))
-            }
-            title='Left serves first'
-          />
+        <div className='flex items-center gap-2 min-w-0'>
           <input
             className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
             placeholder='Player 1'
@@ -320,8 +311,46 @@ export default function ScoreBoard() {
               setScore((prev) => ({ ...prev, leftPlayerName: e.target.value }))
             }
           />
+          <AnimatePresence>
+            {currentServer === 'left' && (
+              <motion.button
+                layoutId='serve-ball'
+                whileTap={{ scale: 0.85 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                onClick={() =>
+                  setScore((prev) => ({
+                    ...prev,
+                    whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
+                  }))
+                }
+                className='flex-none w-10 h-10'
+                title='Tap to change first server'
+              >
+                <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
-        <div className='flex items-center gap-2 justify-end'>
+        <div className='flex items-center gap-2 justify-end min-w-0'>
+          <AnimatePresence>
+            {currentServer === 'right' && (
+              <motion.button
+                layoutId='serve-ball'
+                whileTap={{ scale: 0.85 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                onClick={() =>
+                  setScore((prev) => ({
+                    ...prev,
+                    whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
+                  }))
+                }
+                className='flex-none w-10 h-10'
+                title='Tap to change first server'
+              >
+                <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
+              </motion.button>
+            )}
+          </AnimatePresence>
           <input
             className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none text-right min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
             placeholder='Player 2'
@@ -329,14 +358,6 @@ export default function ScoreBoard() {
             onChange={(e) =>
               setScore((prev) => ({ ...prev, rightPlayerName: e.target.value }))
             }
-          />
-          <motion.button
-            {...tapScale}
-            className={`w-5 h-5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'right' ? 'border-blue-400 bg-blue-400' : 'border-gray-300 dark:border-gray-600'}`}
-            onClick={() =>
-              setScore((prev) => ({ ...prev, whoServeFirst: 'right' }))
-            }
-            title='Right serves first'
           />
         </div>
       </div>
@@ -367,13 +388,6 @@ export default function ScoreBoard() {
             <Minus size={24} strokeWidth={2} />
           </motion.button>
           <Kbd>A</Kbd>
-
-          {currentServer === 'left' && (
-            <div className='flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold'>
-              <Dot size={20} />
-              Serve
-            </div>
-          )}
         </div>
 
         {/* Center column */}
@@ -503,13 +517,6 @@ export default function ScoreBoard() {
             <Minus size={24} strokeWidth={2} />
           </motion.button>
           <Kbd>F</Kbd>
-
-          {currentServer === 'right' && (
-            <div className='flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold'>
-              <Dot size={20} />
-              Serve
-            </div>
-          )}
         </div>
       </div>
 
