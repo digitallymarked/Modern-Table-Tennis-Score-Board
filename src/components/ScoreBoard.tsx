@@ -12,17 +12,15 @@ import ScoreBoardMenu from './ScoreBoardMenu'
 import ColorToggleBtn from './ColorToggleBtn'
 import { Kbd } from './ui/kbd'
 import {
-  IconPlus,
-  IconMinus,
-  IconPlayerTrackNextFilled,
-  IconPingPong,
-  IconMaximize,
-  IconMinimize,
-  IconSwords,
-  IconBounceLeft,
-  IconBounceRight,
-  IconBrandGithub,
-} from '@tabler/icons-react'
+  Plus,
+  Minus,
+  SkipForward,
+  Maximize,
+  Minimize,
+  Swords,
+  Dot,
+  Github,
+} from 'lucide-react'
 
 const MAX = 49
 
@@ -256,7 +254,7 @@ export default function ScoreBoard() {
             className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
             title='View on GitHub'
           >
-            <IconBrandGithub size={20} />
+            <Github size={20} />
           </a>
 
           <motion.button
@@ -266,9 +264,9 @@ export default function ScoreBoard() {
             className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
             {isFullscreen ? (
-              <IconMinimize size={20} />
+              <Minimize size={20} />
             ) : (
-              <IconMaximize size={20} />
+              <Maximize size={20} />
             )}
           </motion.button>
 
@@ -314,7 +312,6 @@ export default function ScoreBoard() {
             }
             title='Left serves first'
           />
-          <IconPingPong size={24} className='text-gray-400 flex-none' />
           <input
             className='flex-1 text-3xl md:text-5xl font-semibold bg-transparent border-none outline-none min-w-0 placeholder:text-gray-300 dark:placeholder:text-gray-600'
             placeholder='Player 1'
@@ -333,7 +330,6 @@ export default function ScoreBoard() {
               setScore((prev) => ({ ...prev, rightPlayerName: e.target.value }))
             }
           />
-          <IconPingPong size={24} className='text-gray-400 flex-none' />
           <motion.button
             {...tapScale}
             className={`w-5 h-5 rounded-full border-2 flex-none transition-colors ${score.whoServeFirst === 'right' ? 'border-blue-400 bg-blue-400' : 'border-gray-300 dark:border-gray-600'}`}
@@ -355,7 +351,7 @@ export default function ScoreBoard() {
             onClick={() => adjustScore('leftPlayerScore', 1)}
             className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
-            <IconPlus size={24} strokeWidth={2} />
+            <Plus size={24} strokeWidth={2} />
           </motion.button>
           <ScoreDrag
             score={score.leftPlayerScore}
@@ -368,13 +364,13 @@ export default function ScoreBoard() {
             onClick={() => adjustScore('leftPlayerScore', -1)}
             className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
-            <IconMinus size={24} strokeWidth={2} />
+            <Minus size={24} strokeWidth={2} />
           </motion.button>
           <Kbd>A</Kbd>
 
           {currentServer === 'left' && (
             <div className='flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold'>
-              <IconBounceLeft size={20} />
+              <Dot size={20} />
               Serve
             </div>
           )}
@@ -391,7 +387,7 @@ export default function ScoreBoard() {
                 onClick={() => adjustScore('leftPlayerMatchScore', 1)}
                 className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
               >
-                <IconPlus size={18} />
+                <Plus size={18} />
               </motion.button>
               <ScoreDrag
                 score={score.leftPlayerMatchScore}
@@ -404,7 +400,7 @@ export default function ScoreBoard() {
                 onClick={() => adjustScore('leftPlayerMatchScore', -1)}
                 className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
               >
-                <IconMinus size={18} />
+                <Minus size={18} />
               </motion.button>
               <Kbd>S</Kbd>
             </div>
@@ -415,7 +411,7 @@ export default function ScoreBoard() {
                 onClick={() => adjustScore('rightPlayerMatchScore', 1)}
                 className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
               >
-                <IconPlus size={18} />
+                <Plus size={18} />
               </motion.button>
               <ScoreDrag
                 score={score.rightPlayerMatchScore}
@@ -428,7 +424,7 @@ export default function ScoreBoard() {
                 onClick={() => adjustScore('rightPlayerMatchScore', -1)}
                 className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
               >
-                <IconMinus size={18} />
+                <Minus size={18} />
               </motion.button>
               <Kbd>D</Kbd>
             </div>
@@ -446,7 +442,7 @@ export default function ScoreBoard() {
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                   className='flex items-center gap-1 text-sm font-light text-gray-500 dark:text-gray-400'
                 >
-                  <IconSwords size={16} /> Deuce
+                  <Swords size={16} /> Deuce
                 </motion.div>
               )}
               {whoWon !== '' && (
@@ -475,7 +471,7 @@ export default function ScoreBoard() {
                   title='Start next game'
                   className='flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors'
                 >
-                  <IconPlayerTrackNextFilled size={18} />
+                  <SkipForward size={18} />
                   Next game
                 </motion.button>
               )}
@@ -491,7 +487,7 @@ export default function ScoreBoard() {
             onClick={() => adjustScore('rightPlayerScore', 1)}
             className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
-            <IconPlus size={24} strokeWidth={2} />
+            <Plus size={24} strokeWidth={2} />
           </motion.button>
           <ScoreDrag
             score={score.rightPlayerScore}
@@ -504,13 +500,13 @@ export default function ScoreBoard() {
             onClick={() => adjustScore('rightPlayerScore', -1)}
             className='w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
-            <IconMinus size={24} strokeWidth={2} />
+            <Minus size={24} strokeWidth={2} />
           </motion.button>
           <Kbd>F</Kbd>
 
           {currentServer === 'right' && (
             <div className='flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white rounded-full text-base font-semibold'>
-              <IconBounceRight size={20} />
+              <Dot size={20} />
               Serve
             </div>
           )}

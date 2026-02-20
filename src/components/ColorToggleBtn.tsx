@@ -3,7 +3,7 @@
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { IconSun, IconMoon } from '@tabler/icons-react'
+import { Sun, Moon } from 'lucide-react'
 
 export default function ColorToggleBtn() {
   const { theme, setTheme } = useTheme()
@@ -29,7 +29,7 @@ export default function ColorToggleBtn() {
           transition={{ duration: 0.18 }}
           className="block"
         >
-          {theme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </motion.span>
       </AnimatePresence>
     </motion.button>

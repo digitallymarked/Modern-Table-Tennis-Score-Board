@@ -2,18 +2,18 @@
 
 import { Menu } from '@base-ui/react/menu'
 import {
-  IconCategory,
-  IconZoomReset,
-  IconRepeat,
-  IconServerCog,
-  IconArrowsExchange,
-  IconArrowsExchange2,
-  IconPlayerPlayFilled,
-  IconPlayerPauseFilled,
-  IconEye,
-  IconEyeOff,
-  IconShare,
-} from '@tabler/icons-react'
+  LayoutGrid,
+  RotateCcw,
+  RefreshCcw,
+  Trash2,
+  ArrowLeftRight,
+  ArrowUpDown,
+  Play,
+  Pause,
+  Eye,
+  EyeOff,
+  Share2,
+} from 'lucide-react'
 import type { ScoreObject } from '@/lib/types'
 
 interface ScoreBoardMenuProps {
@@ -73,7 +73,7 @@ export default function ScoreBoardMenu({
           />
         }
       >
-        <IconCategory size={22} />
+        <LayoutGrid size={22} />
       </Menu.Trigger>
 
       <Menu.Portal>
@@ -83,13 +83,13 @@ export default function ScoreBoardMenu({
             {/* Reset */}
             <p className={labelClass}>Reset</p>
             <Menu.Item className={itemClass} onClick={onResetGame}>
-              <IconZoomReset size={14} /> Reset Game Score
+              <RotateCcw size={14} /> Reset Game Score
             </Menu.Item>
             <Menu.Item className={itemClass} onClick={onResetMatch}>
-              <IconRepeat size={14} /> Reset Match Score
+              <RefreshCcw size={14} /> Reset Match Score
             </Menu.Item>
             <Menu.Item className={itemClass} onClick={onResetAll}>
-              <IconServerCog size={14} /> Reset All
+              <Trash2 size={14} /> Reset All
             </Menu.Item>
 
             <hr className={separatorClass} />
@@ -97,10 +97,10 @@ export default function ScoreBoardMenu({
             {/* Swap */}
             <p className={labelClass}>Swap</p>
             <Menu.Item className={itemClass} onClick={onSwapMatchScore}>
-              <IconArrowsExchange size={14} /> Swap Match Score
+              <ArrowLeftRight size={14} /> Swap Match Score
             </Menu.Item>
             <Menu.Item className={itemClass} onClick={onSwapGameScore}>
-              <IconArrowsExchange2 size={14} /> Swap Game Score
+              <ArrowUpDown size={14} /> Swap Game Score
             </Menu.Item>
 
             <hr className={separatorClass} />
@@ -109,19 +109,19 @@ export default function ScoreBoardMenu({
             <p className={labelClass}>Timer</p>
             {!isTimerRunning && (
               <Menu.Item className={itemClass} onClick={onTimerStart}>
-                <IconPlayerPlayFilled size={14} /> Start Timer
+                <Play size={14} /> Start Timer
               </Menu.Item>
             )}
             {isTimerRunning && (
               <Menu.Item className={itemClass} onClick={onTimerPause}>
-                <IconPlayerPauseFilled size={14} /> Pause Timer
+                <Pause size={14} /> Pause Timer
               </Menu.Item>
             )}
             <Menu.Item className={itemClass} onClick={onTimerReset}>
-              <IconRepeat size={14} /> Reset Timer
+              <RotateCcw size={14} /> Reset Timer
             </Menu.Item>
             <Menu.Item className={itemClass} onClick={onToggleTimer}>
-              {showTimer ? <IconEyeOff size={14} /> : <IconEye size={14} />}
+              {showTimer ? <EyeOff size={14} /> : <Eye size={14} />}
               {showTimer ? 'Hide Timer' : 'Show Timer'}
             </Menu.Item>
 
@@ -130,7 +130,7 @@ export default function ScoreBoardMenu({
             {/* Others */}
             <p className={labelClass}>Others</p>
             <Menu.Item className={itemClass} onClick={shareResult}>
-              <IconShare size={14} /> Share Result
+              <Share2 size={14} /> Share Result
             </Menu.Item>
 
           </Menu.Popup>
