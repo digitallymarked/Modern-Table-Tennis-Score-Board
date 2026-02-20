@@ -2,7 +2,7 @@
 
 Free and open source table tennis score board with automatic serve tracking, match timer, and multi-match support.
 
-[Live Demo](https://modern-table-tennis-score-board.vercel.app/)
+[Live Demo](https://digitallymarked.com/ttscore/)
 
 ## Features
 
@@ -14,16 +14,18 @@ Free and open source table tennis score board with automatic serve tracking, mat
 - **Players always swap sides on next game** — sides are swapped automatically when starting a new game while the first server stays on the same side
 - **Match timer** — stopwatch with play/pause inline next to the timer display, timer centered on screen
 - **Keyboard shortcuts** — full keyboard control:
-  | Key | Action |
-  |-----|--------|
-  | Q | Left game score +1 |
-  | A | Left game score −1 |
-  | W | Left match score +1 |
-  | S | Left match score −1 |
-  | R | Right game score +1 |
-  | F | Right game score −1 |
-  | E | Right match score +1 |
-  | D | Right match score −1 |
+
+  | Key | Action               |
+  | --- | -------------------- |
+  | Q   | Left game score +1   |
+  | A   | Left game score −1   |
+  | W   | Left match score +1  |
+  | S   | Left match score −1  |
+  | R   | Right game score +1  |
+  | F   | Right game score −1  |
+  | E   | Right match score +1 |
+  | D   | Right match score −1 |
+
 - **48×48px touch targets** — all score buttons are mobile-friendly
 - **Drag to set scores** — drag up/down on any score number to adjust it directly
 - **Fullscreen mode** — single button to go fullscreen
@@ -36,20 +38,24 @@ Free and open source table tennis score board with automatic serve tracking, mat
 Accessible from the grid icon in the top-right corner. The menu stays open until explicitly dismissed (Escape or click outside).
 
 **Reset**
+
 - Reset Game Score
 - Reset Match Score
 - Reset All
 
 **Swap**
+
 - Swap Player Names
 - Swap Match Score
 - Swap Game Score
 
 **Timer**
+
 - Reset Timer
 - Show / Hide Timer
 
 **Other**
+
 - Share Result
 
 ## Tech Stack
