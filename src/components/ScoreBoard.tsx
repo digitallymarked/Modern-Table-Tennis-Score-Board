@@ -238,7 +238,9 @@ export default function ScoreBoard() {
 
         {/* Center: Timer */}
         <div className='flex justify-center'>
-          <span className={`font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600 transition-opacity duration-200${showTimer ? '' : ' invisible'}`}>
+          <span
+            className={`font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600 transition-opacity duration-200${showTimer ? '' : ' invisible'}`}
+          >
             {String(minutes).padStart(2, '0')}:
             {String(seconds).padStart(2, '0')}
           </span>
@@ -262,11 +264,7 @@ export default function ScoreBoard() {
             title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
             className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
           >
-            {isFullscreen ? (
-              <Minimize size={20} />
-            ) : (
-              <Maximize size={20} />
-            )}
+            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
           </motion.button>
 
           <ScoreBoardMenu
@@ -311,7 +309,10 @@ export default function ScoreBoard() {
           }
         />
         <motion.button
-          animate={{ opacity: whoWon !== '' ? 1 : 0, scale: whoWon !== '' ? 1 : 0.7 }}
+          animate={{
+            opacity: whoWon !== '' ? 1 : 0,
+            scale: whoWon !== '' ? 1 : 0.7,
+          }}
           transition={{ type: 'spring', stiffness: 400, damping: 22 }}
           whileTap={{ scale: 0.88 }}
           onClick={nextMatch}
@@ -333,23 +334,30 @@ export default function ScoreBoard() {
       </div>
 
       {/* Serve ball — travels full screen width */}
-      <div className={`flex px-4 py-2 mb-1 ${currentServer === 'left' ? 'justify-start' : 'justify-end'}`}>
-        <motion.button
+      <button
+        className={`flex w-full px-4 py-2 mb-1 cursor-pointer ${currentServer === 'left' ? 'justify-start' : 'justify-end'}`}
+        title='Tap to change server'
+        onClick={() =>
+          setScore((prev) => ({
+            ...prev,
+            whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
+          }))
+        }
+      >
+        <motion.div
           layout
           transition={{ type: 'spring', stiffness: 400, damping: 35 }}
           whileTap={{ scale: 0.85 }}
-          onClick={() =>
-            setScore((prev) => ({
-              ...prev,
-              whoServeFirst: prev.whoServeFirst === 'left' ? 'right' : 'left',
-            }))
-          }
           className='w-10 h-10'
-          title='Tap to change first server'
         >
-          <img src='/tt-ball.svg' alt='Serving' className='w-full h-full drop-shadow' draggable={false} />
-        </motion.button>
-      </div>
+          <img
+            src='/tt-ball.svg'
+            alt='Serving'
+            className='w-full h-full drop-shadow'
+            draggable={false}
+          />
+        </motion.div>
+      </button>
 
       {/* Score grid */}
       <div className='grid grid-cols-[1fr_auto_1fr] gap-2 px-4'>
@@ -380,7 +388,7 @@ export default function ScoreBoard() {
         </div>
 
         {/* Center column */}
-        <div className='flex flex-col items-center justify-between py-2 gap-3 min-w-[90px]'>
+        <div className='flex flex-col items-center justify-between gap-3 min-w-[90px]'>
           {/* Match score carousels */}
           <div className='flex gap-1 items-start'>
             <div className='flex flex-col items-center gap-1'>
@@ -488,7 +496,6 @@ export default function ScoreBoard() {
           <Kbd>F</Kbd>
         </div>
       </div>
-
     </motion.div>
   )
 }
