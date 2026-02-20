@@ -1,7 +1,7 @@
 'use client'
 
 import { Menu } from '@base-ui/react/menu'
-import { Switch } from '@base-ui/react/switch'
+import { Switch } from './ui/switch'
 import {
   IconCategory,
   IconZoomReset,
@@ -108,13 +108,10 @@ export default function ScoreBoardMenu({
                 <IconPlayerTrackNextFilled size={14} />
                 Swap sides on next match
               </span>
-              <Switch.Root
+              <Switch
                 checked={swapOnNextMatch}
                 onCheckedChange={onToggleSwapOnNextMatch}
-                className="relative inline-flex w-9 h-5 rounded-full transition-colors outline-none cursor-pointer bg-gray-300 dark:bg-gray-600 data-[checked]:bg-blue-500"
-              >
-                <Switch.Thumb className="block w-4 h-4 rounded-full bg-white shadow-sm transition-transform translate-x-0.5 data-[checked]:translate-x-[18px]" />
-              </Switch.Root>
+              />
             </div>
 
             <hr className={separatorClass} />
