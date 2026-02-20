@@ -255,22 +255,20 @@ export default function ScoreBoard() {
 
         {/* Center: Timer */}
         <div className='flex justify-center'>
-          {showTimer && (
-            <span className='font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600'>
-              {String(minutes).padStart(2, '0')}:
-              {String(seconds).padStart(2, '0')}
-            </span>
-          )}
+          <span className={`font-mono text-5xl font-light tabular-nums text-gray-300 dark:text-gray-600 transition-opacity duration-200${showTimer ? '' : ' invisible'}`}>
+            {String(minutes).padStart(2, '0')}:
+            {String(seconds).padStart(2, '0')}
+          </span>
         </div>
 
         {/* Right: Action buttons */}
         <div className='flex items-center justify-end gap-1'>
           <a
-            href="https://github.com/MarkMarkov/Modern-Table-Tennis-Score-Board"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='https://github.com/digitallymarked/Modern-Table-Tennis-Score-Board'
+            target='_blank'
+            rel='noopener noreferrer'
             className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors'
-            title="View on GitHub"
+            title='View on GitHub'
           >
             <IconBrandGithub size={20} />
           </a>
