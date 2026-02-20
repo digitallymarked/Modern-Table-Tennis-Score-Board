@@ -11,8 +11,8 @@ import ScoreDrag from './ScoreDrag'
 import ScoreBoardMenu from './ScoreBoardMenu'
 import ColorToggleBtn from './ColorToggleBtn'
 import {
-  IconChevronUp,
-  IconChevronDown,
+  IconPlus,
+  IconMinus,
   IconPlayerTrackNextFilled,
   IconPingPong,
   IconMaximize,
@@ -271,9 +271,9 @@ export default function ScoreBoard() {
           <motion.button
             {...tapScale}
             onClick={() => adjustScore('leftPlayerScore', 1)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
-            <IconChevronUp size={28} strokeWidth={2} />
+            <IconPlus size={24} strokeWidth={2} />
           </motion.button>
           <ScoreDrag
             score={score.leftPlayerScore}
@@ -284,9 +284,9 @@ export default function ScoreBoard() {
           <motion.button
             {...tapScale}
             onClick={() => adjustScore('leftPlayerScore', -1)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
-            <IconChevronDown size={28} strokeWidth={2} />
+            <IconMinus size={24} strokeWidth={2} />
           </motion.button>
 
           {currentServer === 'left' && (
@@ -305,9 +305,9 @@ export default function ScoreBoard() {
               <motion.button
                 {...tapScale}
                 onClick={() => adjustScore('leftPlayerMatchScore', 1)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               >
-                <IconChevronUp size={16} />
+                <IconPlus size={18} />
               </motion.button>
               <ScoreDrag
                 score={score.leftPlayerMatchScore}
@@ -318,18 +318,18 @@ export default function ScoreBoard() {
               <motion.button
                 {...tapScale}
                 onClick={() => adjustScore('leftPlayerMatchScore', -1)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               >
-                <IconChevronDown size={16} />
+                <IconMinus size={18} />
               </motion.button>
             </div>
             <div className="flex flex-col items-center gap-1">
               <motion.button
                 {...tapScale}
                 onClick={() => adjustScore('rightPlayerMatchScore', 1)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               >
-                <IconChevronUp size={16} />
+                <IconPlus size={18} />
               </motion.button>
               <ScoreDrag
                 score={score.rightPlayerMatchScore}
@@ -340,9 +340,9 @@ export default function ScoreBoard() {
               <motion.button
                 {...tapScale}
                 onClick={() => adjustScore('rightPlayerMatchScore', -1)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+                className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               >
-                <IconChevronDown size={16} />
+                <IconMinus size={18} />
               </motion.button>
             </div>
           </div>
@@ -383,9 +383,9 @@ export default function ScoreBoard() {
           <motion.button
             {...tapScale}
             onClick={() => adjustScore('rightPlayerScore', 1)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
-            <IconChevronUp size={28} strokeWidth={2} />
+            <IconPlus size={24} strokeWidth={2} />
           </motion.button>
           <ScoreDrag
             score={score.rightPlayerScore}
@@ -396,9 +396,9 @@ export default function ScoreBoard() {
           <motion.button
             {...tapScale}
             onClick={() => adjustScore('rightPlayerScore', -1)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
-            <IconChevronDown size={28} strokeWidth={2} />
+            <IconMinus size={24} strokeWidth={2} />
           </motion.button>
 
           {currentServer === 'right' && (
