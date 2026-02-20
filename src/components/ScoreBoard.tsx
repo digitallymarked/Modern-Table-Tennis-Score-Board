@@ -187,6 +187,14 @@ export default function ScoreBoard() {
     }))
   }
 
+  function swapPlayerNames() {
+    setScore((prev) => ({
+      ...prev,
+      leftPlayerName: prev.rightPlayerName,
+      rightPlayerName: prev.leftPlayerName,
+    }))
+  }
+
   function nextMatch() {
     const whoWon = determineWhoWin(
       score.leftPlayerScore,
@@ -283,6 +291,7 @@ export default function ScoreBoard() {
             onResetAll={resetAllScore}
             onSwapGameScore={swapGameScore}
             onSwapMatchScore={swapMatchScore}
+            onSwapPlayerNames={swapPlayerNames}
             showTimer={showTimer}
             onToggleTimer={() => setShowTimer((v) => !v)}
             onTimerReset={() => reset(new Date(), false)}

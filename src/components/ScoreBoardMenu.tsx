@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu } from '@base-ui/react/menu'
+import { Popover } from '@base-ui/react/popover'
 import {
   LayoutGrid,
   RotateCcw,
@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   Share2,
+  Users,
 } from 'lucide-react'
 import type { ScoreObject } from '@/lib/types'
 
@@ -20,6 +21,7 @@ interface ScoreBoardMenuProps {
   onResetAll: () => void
   onSwapMatchScore: () => void
   onSwapGameScore: () => void
+  onSwapPlayerNames: () => void
   showTimer: boolean
   onToggleTimer: () => void
   onTimerReset: () => void
@@ -40,6 +42,7 @@ export default function ScoreBoardMenu({
   onResetAll,
   onSwapMatchScore,
   onSwapGameScore,
+  onSwapPlayerNames,
   showTimer,
   onToggleTimer,
   onTimerReset,
@@ -56,8 +59,8 @@ export default function ScoreBoardMenu({
   }
 
   return (
-    <Menu.Root>
-      <Menu.Trigger
+    <Popover.Root>
+      <Popover.Trigger
         render={
           <button
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
@@ -66,58 +69,61 @@ export default function ScoreBoardMenu({
         }
       >
         <LayoutGrid size={22} />
-      </Menu.Trigger>
+      </Popover.Trigger>
 
-      <Menu.Portal>
-        <Menu.Positioner side="bottom" align="end" sideOffset={6}>
-          <Menu.Popup className="z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1 min-w-[260px] outline-none">
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" align="end" sideOffset={6}>
+          <Popover.Popup className="z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1 min-w-[260px] outline-none">
 
             {/* Reset */}
             <p className={labelClass}>Reset</p>
-            <Menu.Item className={itemClass} onClick={onResetGame}>
+            <button className={itemClass} onClick={onResetGame}>
               <RotateCcw size={14} /> Reset Game Score
-            </Menu.Item>
-            <Menu.Item className={itemClass} onClick={onResetMatch}>
+            </button>
+            <button className={itemClass} onClick={onResetMatch}>
               <RefreshCcw size={14} /> Reset Match Score
-            </Menu.Item>
-            <Menu.Item className={itemClass} onClick={onResetAll}>
+            </button>
+            <button className={itemClass} onClick={onResetAll}>
               <Trash2 size={14} /> Reset All
-            </Menu.Item>
+            </button>
 
             <hr className={separatorClass} />
 
             {/* Swap */}
             <p className={labelClass}>Swap</p>
-            <Menu.Item className={itemClass} onClick={onSwapMatchScore}>
+            <button className={itemClass} onClick={onSwapPlayerNames}>
+              <Users size={14} /> Swap Player Names
+            </button>
+            <button className={itemClass} onClick={onSwapMatchScore}>
               <ArrowLeftRight size={14} /> Swap Match Score
-            </Menu.Item>
-            <Menu.Item className={itemClass} onClick={onSwapGameScore}>
+            </button>
+            <button className={itemClass} onClick={onSwapGameScore}>
               <ArrowUpDown size={14} /> Swap Game Score
-            </Menu.Item>
+            </button>
 
             <hr className={separatorClass} />
 
             {/* Timer */}
             <p className={labelClass}>Timer</p>
-            <Menu.Item className={itemClass} onClick={onTimerReset}>
+            <button className={itemClass} onClick={onTimerReset}>
               <RotateCcw size={14} /> Reset Timer
-            </Menu.Item>
-            <Menu.Item className={itemClass} onClick={onToggleTimer}>
+            </button>
+            <button className={itemClass} onClick={onToggleTimer}>
               {showTimer ? <EyeOff size={14} /> : <Eye size={14} />}
               {showTimer ? 'Hide Timer' : 'Show Timer'}
-            </Menu.Item>
+            </button>
 
             <hr className={separatorClass} />
 
             {/* Others */}
             <p className={labelClass}>Others</p>
-            <Menu.Item className={itemClass} onClick={shareResult}>
+            <button className={itemClass} onClick={shareResult}>
               <Share2 size={14} /> Share Result
-            </Menu.Item>
+            </button>
 
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   )
 }
