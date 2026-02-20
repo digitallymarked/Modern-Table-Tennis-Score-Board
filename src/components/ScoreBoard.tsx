@@ -202,24 +202,6 @@ export default function ScoreBoard() {
 
         {/* Action buttons */}
         <div className="flex items-center gap-1">
-          <AnimatePresence>
-            {whoWon !== '' && (
-              <motion.button
-                key="next-match"
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.7 }}
-                whileTap={{ scale: 0.88 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                onClick={nextMatch}
-                title="Start next match"
-                className="p-2 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors"
-              >
-                <IconPlayerTrackNextFilled size={22} />
-              </motion.button>
-            )}
-          </AnimatePresence>
-
           <motion.button
             {...tapScale}
             onClick={toggleFullscreen}
@@ -374,8 +356,8 @@ export default function ScoreBoard() {
             </div>
           </div>
 
-          {/* Deuce / Win status */}
-          <div className="flex flex-col items-center gap-1 text-center">
+          {/* Deuce / Win status + Next match */}
+          <div className="flex flex-col items-center gap-2 text-center">
             <AnimatePresence mode="wait">
               {isDeuce && whoWon === '' && (
                 <motion.div
@@ -400,6 +382,24 @@ export default function ScoreBoard() {
                 >
                   {whoWon}
                 </motion.div>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {whoWon !== '' && (
+                <motion.button
+                  key="next-match"
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  whileTap={{ scale: 0.88 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                  onClick={nextMatch}
+                  title="Start next match"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors"
+                >
+                  <IconPlayerTrackNextFilled size={18} />
+                  Next match
+                </motion.button>
               )}
             </AnimatePresence>
           </div>
